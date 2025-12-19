@@ -44,10 +44,10 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.boot</groupId>-->
-<!--			<artifactId>spring-boot-starter-flyway</artifactId>-->
-<!--		</dependency>-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-flyway</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-hateoas</artifactId>
@@ -69,10 +69,10 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
 		</dependency>
-		<!--		<dependency>-->
-		<!--			<groupId>org.springframework.cloud</groupId>-->
-		<!--			<artifactId>spring-cloud-starter-config</artifactId>-->
-		<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.cloud</groupId>-->
+<!--			<artifactId>spring-cloud-starter-config</artifactId>-->
+<!--		</dependency>-->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-openfeign</artifactId>
@@ -85,11 +85,11 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!--		<dependency>-->
-		<!--			<groupId>org.springframework.boot</groupId>-->
-		<!--			<artifactId>spring-boot-starter-actuator-test</artifactId>-->
-		<!--			<scope>test</scope>-->
-		<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.boot</groupId>-->
+<!--			<artifactId>spring-boot-starter-actuator-test</artifactId>-->
+<!--			<scope>test</scope>-->
+<!--		</dependency>-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-amqp-test</artifactId>
@@ -154,20 +154,20 @@
 		</dependency>
 
 
-		<!-- Validation API -->
+<!--		&lt;!&ndash; Validation API &ndash;&gt;-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 
-		<!-- Jakarta Servlet API (for HttpServletRequest) -->
+<!--		&lt;!&ndash; Jakarta Servlet API (for HttpServletRequest) &ndash;&gt;-->
 		<dependency>
 			<groupId>jakarta.servlet</groupId>
 			<artifactId>jakarta.servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- JWT  -->
+<!--		&lt;!&ndash; JWT  &ndash;&gt;-->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
@@ -189,9 +189,10 @@
 		<!-- Custom Shared Libraries Dependency -->
 		<dependency>
 			<groupId>ke.co.legalbridge</groupId>
-			<artifactId>Shared-Libraries</artifactId>
+			<artifactId>shared-libraries</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+
 	</dependencies>
 
 	<dependencyManagement>
@@ -234,7 +235,7 @@
 				</configuration>
 			</plugin>
 
-			<!-- Flyway DB plugin -->
+			 <!-- Flyway DB plugin -->
 			<plugin>
 				<groupId>org.flywaydb</groupId>
 				<artifactId>flyway-maven-plugin</artifactId>
@@ -253,5 +254,13 @@
 
 		</plugins>
 	</build>
+
+	<repositories>
+		<repository>
+			<id>github</id>
+			<url>https://maven.pkg.github.com/imbizzo-technologies/legal-bridge-shared-libraries</url>
+		</repository>
+	</repositories>
+
 
 </project>
