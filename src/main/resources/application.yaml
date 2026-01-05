@@ -16,3 +16,6 @@ spring:
     password: ${DB_PASSWORD}
     url: ${DB_URL}
     schemas: public
+
+jwt:
+  secret: ${JWT_SECRET}
