@@ -33,7 +33,7 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(User user) {
+    public String generateAccessToken(User user) {
 
         Map<String, Object> claims = new HashMap<>();
 
@@ -68,6 +68,14 @@ public class JwtService {
                 .expiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
                 .signWith(getKey())
                 .compact();
+    }
+
+    public long getAccessTokenExpirationInSeconds() {
+        return accessTokenExpiration / 1000;
+    }
+
+    public long getRefreshTokenExpirationInSeconds() {
+        return refreshTokenExpiration / 1000;
     }
 
 }

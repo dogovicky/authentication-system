@@ -1,10 +1,13 @@
 package ke.co.legalbridge.Auth_Service.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import ke.co.legalbridge.Auth_Service.dto.ResponseDTO;
 import ke.co.legalbridge.Auth_Service.dto.SignUpRequestDTO;
 import ke.co.legalbridge.Auth_Service.model.User;
 import ke.co.legalbridge.Auth_Service.service.RegistrationService;
 import ke.co.legalbridge.sharedlibraries.response.ApiResponse;
+import ke.co.legalbridge.sharedlibraries.response.ResponseEntityBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,10 +23,20 @@ public class RegistrationController {
     private final RegistrationService registrationService;
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<User>> registerNewUser(@Valid @RequestBody SignUpRequestDTO signUpRequestDTO) {
-        User user = registrationService.register(signUpRequestDTO);
+    public ResponseEntity<ApiResponse<ResponseDTO>> registerNewUser(@Valid @RequestBody SignUpRequestDTO signUpRequestDTO, HttpServletRequest request) {
 
-        return ResponseEntity.ok(ApiResponse.success(user).message("Sign Up Successful").build());
+        long startTime = System.currentTimeMillis();
+
+        ResponseDTO response = registrationService.register(signUpRequestDTO);
+
+        return ResponseEntityBuilder.created(response, "User registered successfully")
+                .withProcessingTime(startTime)
+                .withMetadata(
+                        request.getHeader("X-Request-ID"),
+                        "auth-service",
+                        request.getRequestURI()
+                )
+                .build();
     }
 
 }
