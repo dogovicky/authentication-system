@@ -21,6 +21,7 @@ public class ResponseDTO {
     private String accessToken;
     private String refreshToken;
     private String tokenType;
+    private String sessionId;
     private long expiresIn; // seconds
 
 

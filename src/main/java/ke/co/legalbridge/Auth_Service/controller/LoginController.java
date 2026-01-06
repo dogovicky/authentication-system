@@ -28,7 +28,7 @@ public class LoginController {
 
         long startTime = System.currentTimeMillis();
 
-        ResponseDTO response = loginService.login(loginRequestDTO);
+        ResponseDTO response = loginService.login(loginRequestDTO, request);
 
         return ResponseEntityBuilder.accepted(response, "Login Successful")
                 .withProcessingTime(startTime)

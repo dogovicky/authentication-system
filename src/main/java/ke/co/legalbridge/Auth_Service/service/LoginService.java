@@ -1,8 +1,11 @@
 package ke.co.legalbridge.Auth_Service.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import ke.co.legalbridge.Auth_Service.dto.LoginRequestDTO;
 import ke.co.legalbridge.Auth_Service.dto.ResponseDTO;
 import ke.co.legalbridge.Auth_Service.model.User;
+import ke.co.legalbridge.Auth_Service.model.UserSession;
+import ke.co.legalbridge.Auth_Service.repository.SessionRepo;
 import ke.co.legalbridge.Auth_Service.repository.UserRepo;
 import ke.co.legalbridge.sharedlibraries.exceptions.AuthSecurityException;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +23,9 @@ public class LoginService {
     private final UserRepo userRepo;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+    private final SessionRepo sessionRepo;
 
-    public ResponseDTO login(LoginRequestDTO loginRequestDTO) {
+    public ResponseDTO login(LoginRequestDTO loginRequestDTO, HttpServletRequest request) {
 
         // Find User
         User user = userRepo.findByEmail(loginRequestDTO.getEmail())
@@ -36,14 +40,28 @@ public class LoginService {
             throw AuthSecurityException.invalidCredentials("auth-service");
         }
 
+        // Generate tokens
+        String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
+
+        // Create and Track Session
+        UserSession session = UserSession.builder()
+                .userId(user.getId())
+                .refreshToken(refreshToken)
+                .deviceInfo(extractDeviceInfo(request))
+                .ipAddress(extractIpAddress(request))
+                .issuedAt(LocalDateTime.now())
+                .expiresAt(LocalDateTime.now().plusDays(7))
+                .build();
+
+        sessionRepo.save(session);
+
         // Reset failed attempts on successful login
         user.setFailedLoginAttempts(0);
         user.setLastLoginAt(LocalDateTime.now());
         userRepo.save(user);
 
-        // Generate tokens
-        String accessToken = jwtService.generateAccessToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
+        log.info("User logged in: {} from IP: {}", user.getEmail(), session.getIpAddress());
 
         // Build response
         return ResponseDTO.builder()
@@ -54,12 +72,13 @@ public class LoginService {
                 .refreshToken(refreshToken)
                 .tokenType("Bearer")
                 .expiresIn(jwtService.getAccessTokenExpirationInSeconds())
+                .sessionId(session.getId().toString())
                 .build();
 
     }
 
 
-    private void validateAccountStatus(User user) {
+    private static void validateAccountStatus(User user) {
         // Check if account is locked
         if (user.getLockedAt() != null) {
             throw AuthSecurityException.accountLocked("auth-service");
@@ -88,6 +107,19 @@ public class LoginService {
         }
 
         userRepo.save(user);
+    }
+
+    private String extractDeviceInfo(HttpServletRequest request) {
+        String userAgent = request.getHeader("User-Agent");
+        return userAgent != null ? userAgent.substring(0, Math.min(userAgent.length(), 500)) : "Unknown";
+    }
+
+    private String extractIpAddress(HttpServletRequest request) {
+        String xForwardedFor = request.getHeader("X-Forwarded-For");
+        if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
+            return xForwardedFor.split(",")[0].trim();
+        }
+        return request.getRemoteAddr();
     }
 
 }
