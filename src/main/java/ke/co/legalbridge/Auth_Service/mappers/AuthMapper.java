@@ -1,5 +1,6 @@
 package ke.co.legalbridge.Auth_Service.mappers;
 
+import ke.co.legalbridge.Auth_Service.dto.LoginRequestDTO;
 import ke.co.legalbridge.Auth_Service.dto.ResponseDTO;
 import ke.co.legalbridge.Auth_Service.dto.SignUpRequestDTO;
 import ke.co.legalbridge.Auth_Service.model.User;
@@ -40,6 +41,13 @@ public interface AuthMapper {
     @Mapping(target = "tokenType", ignore = true)
     @Mapping(target = "expiresIn", ignore = true)
     ResponseDTO userToResponse(User user);
+
+    /*
+     * Map LoginRequest To User
+     */
+//    @Mapping(target = "email")
+//    @Mapping(target = "passwordHash")
+//    User loginRequestDTO(LoginRequestDTO dto);
 
     /*
      * Add tokens to response DTO

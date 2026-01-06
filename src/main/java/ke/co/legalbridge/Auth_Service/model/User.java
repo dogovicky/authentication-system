@@ -2,7 +2,6 @@ package ke.co.legalbridge.Auth_Service.model;
 
 import jakarta.persistence.*;
 import ke.co.legalbridge.sharedlibraries.enums.UserType;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

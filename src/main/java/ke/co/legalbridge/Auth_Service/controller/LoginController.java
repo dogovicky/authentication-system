@@ -2,12 +2,13 @@ package ke.co.legalbridge.Auth_Service.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import ke.co.legalbridge.Auth_Service.dto.LoginRequestDTO;
 import ke.co.legalbridge.Auth_Service.dto.ResponseDTO;
-import ke.co.legalbridge.Auth_Service.dto.SignUpRequestDTO;
-import ke.co.legalbridge.Auth_Service.service.RegistrationService;
+import ke.co.legalbridge.Auth_Service.service.LoginService;
 import ke.co.legalbridge.sharedlibraries.response.ApiResponse;
 import ke.co.legalbridge.sharedlibraries.response.ResponseEntityBuilder;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,20 +16,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/auth")
-public class RegistrationController {
+@Slf4j
+@RequiredArgsConstructor
+public class LoginController {
 
-    private final RegistrationService registrationService;
+    private final LoginService loginService;
 
-    @PostMapping("/register")
-    public ResponseEntity<ApiResponse<ResponseDTO>> registerNewUser(@Valid @RequestBody SignUpRequestDTO signUpRequestDTO, HttpServletRequest request) {
+    @PostMapping("/login")
+    private ResponseEntity<ApiResponse<ResponseDTO>> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO, HttpServletRequest request) {
 
         long startTime = System.currentTimeMillis();
 
-        ResponseDTO response = registrationService.register(signUpRequestDTO);
+        ResponseDTO response = loginService.login(loginRequestDTO);
 
-        return ResponseEntityBuilder.created(response, "User registered successfully")
+        return ResponseEntityBuilder.accepted(response, "Login Successful")
                 .withProcessingTime(startTime)
                 .withMetadata(
                         request.getHeader("X-Request-ID"),
@@ -36,6 +38,7 @@ public class RegistrationController {
                         request.getRequestURI()
                 )
                 .build();
+
     }
 
 }

@@ -1,11 +1,9 @@
 package ke.co.legalbridge.Auth_Service.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
