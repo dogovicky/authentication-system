@@ -1,5 +1,6 @@
 package ke.co.legalbridge.Auth_Service.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import ke.co.legalbridge.Auth_Service.dto.EmailVerificationConfirmDTO;
 import ke.co.legalbridge.Auth_Service.dto.EmailVerificationResponseDTO;
@@ -21,9 +22,10 @@ public class EmailVerificationController {
     private final EmailVerificationService verificationService;
 
     @PostMapping("/verify-email")
-    public ResponseEntity<ApiResponse<EmailVerificationResponseDTO>> verifyEmail(@Valid @RequestBody EmailVerificationConfirmDTO request) {
+    public ResponseEntity<ApiResponse<EmailVerificationResponseDTO>> verifyEmail(
+            @Valid @RequestBody EmailVerificationConfirmDTO request, HttpServletRequest servletRequest) {
 
-        EmailVerificationResponseDTO response = verificationService.verifyToken(request.getToken());
+        EmailVerificationResponseDTO response = verificationService.verifyToken(request.getToken(), servletRequest);
 
         return ResponseEntityBuilder.ok(response, response.getMessage()).build();
     }

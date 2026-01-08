@@ -8,6 +8,7 @@ import ke.co.legalbridge.Auth_Service.exception.WeakPasswordException;
 import ke.co.legalbridge.Auth_Service.mappers.AuthMapper;
 import ke.co.legalbridge.Auth_Service.model.User;
 import ke.co.legalbridge.Auth_Service.repository.UserRepo;
+import ke.co.legalbridge.sharedlibraries.exceptions.BusinessException;
 import ke.co.legalbridge.sharedlibraries.exceptions.TechnicalException;
 import ke.co.legalbridge.sharedlibraries.security.PasswordUtil;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,6 @@ import java.time.LocalDateTime;
 public class RegistrationService {
 
     private final UserRepo userRepo;
-    private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final PasswordUtil passwordUtil = new PasswordUtil();
     private final AuthMapper authMapper;
@@ -61,20 +61,14 @@ public class RegistrationService {
             // TODO: Send verification email and verify account for user to continue
             verificationService.requestVerificationEmail(savedUser.getEmail());
 
-            // Generate tokens
-            String accessToken = jwtService.generateAccessToken(savedUser);
-            String refreshToken = jwtService.generateRefreshToken(savedUser);
-
             // Map to response DTO
-            ResponseDTO response = authMapper.userToResponse(savedUser);
-
-            // Add tokens to response
-            response.setAccessToken(accessToken);
-            response.setRefreshToken(refreshToken);
-            response.setTokenType("Bearer");
-            response.setExpiresIn(jwtService.getAccessTokenExpirationInSeconds());
-
-            return response;
+            return ResponseDTO.builder()
+                    .userId(savedUser.getId().toString())
+                    .email(savedUser.getEmail())
+                    .userType(savedUser.getUserType().name())
+                    .isActive(false)
+                    .isVerified(false)
+                    .build();
         } catch (Exception ex) {
             log.error("Failed to register user: {}", ex.getMessage(), ex);
             throw TechnicalException.databaseError("auth-service").addDetail("email", signUpRequestDTO.getEmail());
