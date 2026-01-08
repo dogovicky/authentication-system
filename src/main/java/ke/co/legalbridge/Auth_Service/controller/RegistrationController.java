@@ -28,7 +28,7 @@ public class RegistrationController {
 
         ResponseDTO response = registrationService.register(signUpRequestDTO);
 
-        return ResponseEntityBuilder.created(response, "User registered successfully")
+        return ResponseEntityBuilder.created(response, "Registration Successful. Please check email to verify account.")
                 .withProcessingTime(startTime)
                 .withMetadata(
                         request.getHeader("X-Request-ID"),

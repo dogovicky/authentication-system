@@ -32,7 +32,7 @@ public class LoginService {
                 .orElseThrow(() -> AuthSecurityException.invalidCredentials("auth-service"));
 
         // Check account status
-        //validateAccountStatus(user);
+        validateAccountStatus(user);
 
         // Verify password matches
         if (!passwordEncoder.matches(loginRequestDTO.getPassword(), user.getPasswordHash())) {

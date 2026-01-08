@@ -28,6 +28,7 @@ public class RegistrationService {
     private final PasswordEncoder passwordEncoder;
     private final PasswordUtil passwordUtil = new PasswordUtil();
     private final AuthMapper authMapper;
+    private final EmailVerificationService verificationService;
 
     public ResponseDTO register(SignUpRequestDTO signUpRequestDTO) {
 
@@ -56,6 +57,9 @@ public class RegistrationService {
             // Save user
             User savedUser = userRepo.save(user);
             log.info("============== User registered successfully: {} ==============", savedUser.getEmail());
+
+            // TODO: Send verification email and verify account for user to continue
+            verificationService.requestVerificationEmail(savedUser.getEmail());
 
             // Generate tokens
             String accessToken = jwtService.generateAccessToken(savedUser);

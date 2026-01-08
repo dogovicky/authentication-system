@@ -31,7 +31,7 @@ public class User {
     private boolean isVerified = false;
 
     @Column(nullable = false)
-    private boolean isActive = true;
+    private boolean isActive = false;
 
 
     private LocalDateTime lastLoginAt;
