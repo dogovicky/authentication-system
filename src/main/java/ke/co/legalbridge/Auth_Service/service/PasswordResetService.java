@@ -8,6 +8,7 @@ import ke.co.legalbridge.Auth_Service.exception.InvalidTokenException;
 import ke.co.legalbridge.Auth_Service.model.PasswordResetToken;
 import ke.co.legalbridge.Auth_Service.model.User;
 import ke.co.legalbridge.Auth_Service.repository.PasswordResetTokenRepo;
+import ke.co.legalbridge.Auth_Service.repository.SessionRepo;
 import ke.co.legalbridge.Auth_Service.repository.UserRepo;
 import ke.co.legalbridge.sharedlibraries.exceptions.AuthSecurityException;
 import ke.co.legalbridge.sharedlibraries.exceptions.BusinessException;
@@ -34,6 +35,7 @@ public class PasswordResetService {
     private final PasswordResetTokenRepo passwordResetTokenRepo;
     private final PasswordEncoder passwordEncoder;
     private final PasswordUtil passwordUtil = new PasswordUtil();
+    private final SessionRepo sessionRepo;
 
 //    @Value("{app.password-reset.token-expiry-hours:1}")
 //    private int tokenExpiryHours;
@@ -183,7 +185,11 @@ public class PasswordResetService {
 
             userRepo.save(user);
 
+            // TODO: Delete reset token after a successful update
+            passwordResetTokenRepo.deleteByUserId(user.getId());
+
             // TODO: Call Session Service to revoke all sessions
+            sessionRepo.deleteByUserId(user.getId());
 
             log.info("Password successfully reset for user: {}", user.getEmail());
 

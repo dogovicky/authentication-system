@@ -23,4 +23,7 @@ public interface SessionRepo extends JpaRepository<UserSession, UUID> {
 
     // Find active sessions for a user
     List<UserSession> findByUserIdAndIsRevokedFalseAndExpiresAtAfter(UUID userId, LocalDateTime now);
+
+    // Delete all user sessions after user updates password
+    void deleteByUserId(UUID userId);
 }
