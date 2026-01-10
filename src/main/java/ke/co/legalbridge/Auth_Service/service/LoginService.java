@@ -40,19 +40,44 @@ public class LoginService {
             throw AuthSecurityException.invalidCredentials("auth-service");
         }
 
+        // Extract Device Info and IPAddress
+        String deviceInfo = extractDeviceInfo(request);
+        String ipAddress = extractIpAddress(request);
+
+        //Check if session already exists for this device
+        UserSession session = sessionRepo.findByUserIdAndDeviceInfoAndIsRevokedFalse(user.getId(), deviceInfo)
+                .orElse(null);
+
         // Generate tokens
         String accessToken = jwtService.generateAccessToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
+        String refreshToken;
 
-        // Create and Track Session
-        UserSession session = UserSession.builder()
-                .userId(user.getId())
-                .refreshToken(refreshToken)
-                .deviceInfo(extractDeviceInfo(request))
-                .ipAddress(extractIpAddress(request))
-                .issuedAt(LocalDateTime.now())
-                .expiresAt(LocalDateTime.now().plusDays(7))
-                .build();
+        if (session != null && session.getExpiresAt().isAfter(LocalDateTime.now())) {
+            // Reuse existing session - just update it
+            session.setLastUsedAt(LocalDateTime.now());
+            session.setIpAddress(ipAddress);
+            refreshToken = session.getRefreshToken();
+
+            log.info("Reusing existing session for user: {} on device: {}",
+                    user.getEmail(), deviceInfo);
+        } else {
+            // Create a new session only if no valid one exists
+            refreshToken = jwtService.generateRefreshToken(user);
+
+            // Create and Track Session
+            session = UserSession.builder()
+                    .userId(user.getId())
+                    .refreshToken(refreshToken)
+                    .deviceInfo(extractDeviceInfo(request))
+                    .ipAddress(extractIpAddress(request))
+                    .issuedAt(LocalDateTime.now())
+                    .expiresAt(LocalDateTime.now().plusDays(7))
+                    .lastUsedAt(LocalDateTime.now())
+                    .build();
+
+            log.info("Created new session for user: {} on device: {}",
+                    user.getEmail(), deviceInfo);
+        }
 
         sessionRepo.save(session);
 
@@ -73,6 +98,8 @@ public class LoginService {
                 .tokenType("Bearer")
                 .expiresIn(jwtService.getAccessTokenExpirationInSeconds())
                 .sessionId(session.getId().toString())
+                .isActive(user.isActive())
+                .isVerified(user.isVerified())
                 .build();
 
     }

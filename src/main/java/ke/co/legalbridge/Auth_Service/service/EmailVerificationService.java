@@ -135,6 +135,7 @@ public class EmailVerificationService {
                 .refreshToken(refreshToken)
                 .tokenType("Bearer")
                 .expiresIn(jwtService.getAccessTokenExpirationInSeconds())
+                .sessionId(userSession.getId().toString())
                 .build();
     }
 

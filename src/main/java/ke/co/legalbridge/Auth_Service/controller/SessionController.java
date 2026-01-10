@@ -8,12 +8,10 @@ import ke.co.legalbridge.Auth_Service.dto.UserSessionDTO;
 import ke.co.legalbridge.Auth_Service.service.SessionService;
 import ke.co.legalbridge.sharedlibraries.response.ApiResponse;
 import ke.co.legalbridge.sharedlibraries.response.ResponseEntityBuilder;
-import ke.co.legalbridge.sharedlibraries.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,18 +45,18 @@ public class SessionController {
 
     @PostMapping("/logout-all")
     @PreAuthorize("isAuthenticated")
-    public ResponseEntity<ApiResponse<Object>> logoutAllSessions(@AuthenticationPrincipal UserPrincipal principal) {
+    public ResponseEntity<ApiResponse<Object>> logoutAllSessions() {
 
-        sessionService.logoutAllSessions(principal.getUserId());
+        sessionService.logoutAllSessions();
 
         return ResponseEntityBuilder.ok(null, "All sessions logged out").build();
     }
 
     @GetMapping("/sessions")
     @PreAuthorize("isAuthenticated")
-    public ResponseEntity<ApiResponse<List<UserSessionDTO>>> getActiveSessions(@AuthenticationPrincipal UserPrincipal principal) {
+    public ResponseEntity<ApiResponse<List<UserSessionDTO>>> getActiveSessions() {
 
-        List<UserSessionDTO> activeSessions = sessionService.getActiveSessions(principal.getUserId());
+        List<UserSessionDTO> activeSessions = sessionService.getActiveSessions();
 
         return ResponseEntityBuilder.ok(activeSessions).build();
     }

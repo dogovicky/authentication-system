@@ -9,6 +9,7 @@ import ke.co.legalbridge.Auth_Service.repository.SessionRepo;
 import ke.co.legalbridge.Auth_Service.repository.UserRepo;
 import ke.co.legalbridge.sharedlibraries.exceptions.AuthSecurityException;
 import ke.co.legalbridge.sharedlibraries.security.JwtUtil;
+import ke.co.legalbridge.sharedlibraries.security.SecurityContextUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -81,32 +83,71 @@ public class SessionService {
                 });
     }
 
-    public void logoutAllSessions(String userId) {
+    // No userId parameter needed - get from SecurityContext
+    public void logoutSession(String sessionId) {
+        String userId = SecurityContextUtil.getCurrentUserId();
+
+        if (userId == null) {
+            throw AuthSecurityException.unauthorized("auth-service");
+        }
+
+        UserSession session = sessionRepo.findById(UUID.fromString(sessionId))
+                .orElseThrow(() -> AuthSecurityException.sessionExpired("auth-service"));
+
+        // ✅ Security: Ensure session belongs to requesting user
+        if (!session.getUserId().toString().equals(userId)) {
+            throw AuthSecurityException.forbidden("auth-service");
+        }
+
+        session.setRevoked(true);
+        session.setRevokedAt(LocalDateTime.now());
+        sessionRepo.save(session);
+
+        log.info("Session {} logged out by user: {}", sessionId, userId);
+    }
+
+    public void logoutAllSessions() {
+        String userId = SecurityContextUtil.getCurrentUserId(); // Get context from authentication
+
+        if (userId == null) {
+            throw AuthSecurityException.unauthorized("auth-service");
+        }
+
         List<UserSession> sessions = sessionRepo.findByUserIdAndIsRevokedFalse(UUID.fromString(userId));
         sessions.forEach(session -> {
             session.setRevoked(true);
             session.setRevokedAt(LocalDateTime.now());
         });
+
         sessionRepo.saveAll(sessions);
         log.info("All sessions revoked for user: {}", userId);
     }
 
-    public List<UserSessionDTO> getActiveSessions(String userId) {
-        List<UserSession> sessions = sessionRepo.findByUserIdAndIsRevokedFalseAndExpiresAtAfter(UUID.fromString(userId), LocalDateTime.now());
+    public List<UserSessionDTO> getActiveSessions() {
+
+        String userId = SecurityContextUtil.getCurrentUserId();
+
+        if (userId == null) {
+            throw AuthSecurityException.unauthorized("auth-service");
+        }
+
+        List<UserSession> sessions = sessionRepo
+                .findByUserIdAndIsRevokedFalseAndExpiresAtAfter(UUID.fromString(userId), LocalDateTime.now());
 
         if (sessions.isEmpty()) {
             return new ArrayList<>();
         }
 
-        List<UserSessionDTO> activeSessions = new ArrayList<>();
-        for (UserSession session : sessions) {
-            UserSessionDTO userSessionDTO = UserSessionDTO.builder()
-                    .id(session.getUserId().toString())
-                    .deviceInfo(session.getDeviceInfo())
-                    .build();
-            activeSessions.add(userSessionDTO);
-        }
-        return activeSessions;
+        return sessions.stream()
+                .map(session -> UserSessionDTO.builder()
+                        .id(session.getId().toString())
+                        .deviceInfo(session.getDeviceInfo())
+                        .ipAddress(session.getIpAddress())
+                        .issuedAt(session.getIssuedAt())
+                        .lastUsedAt(session.getLastUsedAt())
+                        .expiresAt(session.getExpiresAt())
+                        .build())
+                .collect(Collectors.toList());
     }
 
 }
