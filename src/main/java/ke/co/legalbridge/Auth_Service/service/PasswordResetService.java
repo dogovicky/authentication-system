@@ -10,6 +10,7 @@ import ke.co.legalbridge.Auth_Service.model.User;
 import ke.co.legalbridge.Auth_Service.repository.PasswordResetTokenRepo;
 import ke.co.legalbridge.Auth_Service.repository.SessionRepo;
 import ke.co.legalbridge.Auth_Service.repository.UserRepo;
+import ke.co.legalbridge.sharedlibraries.enums.ErrorCode;
 import ke.co.legalbridge.sharedlibraries.exceptions.AuthSecurityException;
 import ke.co.legalbridge.sharedlibraries.exceptions.BusinessException;
 import ke.co.legalbridge.sharedlibraries.exceptions.TechnicalException;
@@ -37,11 +38,11 @@ public class PasswordResetService {
     private final PasswordUtil passwordUtil = new PasswordUtil();
     private final SessionRepo sessionRepo;
 
-//    @Value("{app.password-reset.token-expiry-hours:1}")
-//    private int tokenExpiryHours;
-
     @Value("${app.frontend.url:http://localhost:3000}")
     private String frontendUrl;
+
+    @Value("${app.password-reset.prevent-reuse:true}")
+    private boolean preventPasswordReuse;
 
     /*
      * Step 1: User requests password reset by providing email
@@ -174,6 +175,11 @@ public class PasswordResetService {
         User user = userRepo.findById(resetToken.getUserId())
                 .orElseThrow(() -> BusinessException.userNotFound(resetToken.getUserId().toString(), "auth-service"));
 
+        // Check if new password is same as current password
+        if (preventPasswordReuse && isPasswordReused(request.getNewPassword(), user.getPasswordHash())) {
+            log.warn("User attempted to reuse password: {}", user.getEmail());
+            throw new ValidationException(ErrorCode.PASSWORD_TOO_WEAK, "Can't reuse password", "auth-service").addDetail("reason", "Password reuse not allowed");
+        }
 
         try {
             // Update Password
@@ -185,10 +191,10 @@ public class PasswordResetService {
 
             userRepo.save(user);
 
-            // TODO: Delete reset token after a successful update
+            // Delete the reset token after use
             passwordResetTokenRepo.deleteByUserId(user.getId());
 
-            // TODO: Call Session Service to revoke all sessions
+            // Revoke all sessions after user changes password
             sessionRepo.deleteByUserId(user.getId());
 
             log.info("Password successfully reset for user: {}", user.getEmail());
@@ -208,6 +214,17 @@ public class PasswordResetService {
     }
 
     // ================== Private Helper Methods ================
+
+    /*
+     * Check if user is re-using password. Reject password re-using
+     * @param newPassword Plain text new password
+     * @param currentPasswordHash Hashed current password from database
+     * @return true if passwords match (reuse detected)
+     */
+    private boolean isPasswordReused(String newPassword, String currentPasswordHash) {
+        return passwordEncoder.matches(newPassword, currentPasswordHash);
+    }
+
     /*
      * Generate cryptographically secure random token
      */
