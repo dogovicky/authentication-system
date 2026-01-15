@@ -21,6 +21,10 @@ public interface SessionRepo extends JpaRepository<UserSession, UUID> {
     // Clean up expired sessions
     void deleteByExpiresAtBefore(LocalDateTime dateTime);
 
+    int deleteByExpiresAtBeforeAndIsRevokedFalse(LocalDateTime now);
+
+    int deleteByRevokedTrueAndRevokedAtBefore(LocalDateTime now);
+
     // Find session by device info for reuse
     Optional<UserSession> findByUserIdAndDeviceInfoAndIsRevokedFalse(UUID userId, String deviceInfo);
 
