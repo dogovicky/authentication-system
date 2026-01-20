@@ -17,6 +17,25 @@ spring:
     url: ${DB_URL}
     schemas: public
 
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USER}
+    password: ${RABBITMQ_PASSWORD}
+
+    exchanges:
+      emailSignup: x.signup
+      emailPasswordReset: x.password-reset
+      profileUpdate: x.update-profile
+    queues:
+      emailSignup: q.email.signup
+      emailPasswordReset: q.password.reset
+      profileUpdate: q.update.profile
+    routing-keys:
+      emailSignup: user.signup.email
+      emailPasswordReset: user.password.reset
+      profileUpdate: user.profile.update
+
 jwt:
   secret: ${JWT_SECRET}
 
