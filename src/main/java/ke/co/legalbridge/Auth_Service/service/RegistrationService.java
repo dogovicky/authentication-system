@@ -8,6 +8,7 @@ import ke.co.legalbridge.Auth_Service.exception.WeakPasswordException;
 import ke.co.legalbridge.Auth_Service.mappers.AuthMapper;
 import ke.co.legalbridge.Auth_Service.model.User;
 import ke.co.legalbridge.Auth_Service.repository.UserRepo;
+import ke.co.legalbridge.sharedlibraries.dtos.common.UserDTO;
 import ke.co.legalbridge.sharedlibraries.exceptions.BusinessException;
 import ke.co.legalbridge.sharedlibraries.exceptions.TechnicalException;
 import ke.co.legalbridge.sharedlibraries.security.PasswordUtil;
@@ -29,6 +30,7 @@ public class RegistrationService {
     private final PasswordUtil passwordUtil = new PasswordUtil();
     private final AuthMapper authMapper;
     private final EmailVerificationService verificationService;
+
 
     public ResponseDTO register(SignUpRequestDTO signUpRequestDTO) {
 

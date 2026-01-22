@@ -9,6 +9,7 @@ import ke.co.legalbridge.Auth_Service.model.UserSession;
 import ke.co.legalbridge.Auth_Service.repository.EmailVerificationTokenRepo;
 import ke.co.legalbridge.Auth_Service.repository.SessionRepo;
 import ke.co.legalbridge.Auth_Service.repository.UserRepo;
+import ke.co.legalbridge.sharedlibraries.dtos.common.UserDTO;
 import ke.co.legalbridge.sharedlibraries.exceptions.AuthSecurityException;
 import ke.co.legalbridge.sharedlibraries.exceptions.BusinessException;
 import ke.co.legalbridge.sharedlibraries.exceptions.TechnicalException;
@@ -31,6 +32,7 @@ public class EmailVerificationService {
     private final EmailVerificationTokenRepo verificationTokenRepo;
     private final JwtService jwtService;
     private final SessionRepo sessionRepo;
+    private final RabbitMQPublisher rabbitMQPublisher;
 
     @Value("${app.frontend.url:http://localhost:3000}")
     private String frontendUrl;
@@ -126,6 +128,11 @@ public class EmailVerificationService {
         userRepo.save(user);
 
         log.info("Account verified successfully: {}", user.getEmail());
+
+        // Once verification is successful, send user infor to Profile Service for account updating
+        UserDTO userDTO = new UserDTO(user.getId(), user.getEmail(), user.getUserType().name(), user.isVerified(), user.isActive(), user.getLastLoginAt(), user.getCreatedAt());
+        rabbitMQPublisher.publishMessage(
+                "x.update-profile", "user.profile.update", userDTO);
 
         return EmailVerificationResponseDTO.builder()
                 .success(true)
