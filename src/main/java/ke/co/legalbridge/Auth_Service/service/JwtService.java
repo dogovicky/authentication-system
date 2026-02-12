@@ -21,7 +21,7 @@ public class JwtService {
     @Value("${jwt.issuer:legal-bridge}")
     private String issuer;
 
-    @Value("${jwt.access-token-expiration:900000}") // 15 minutes
+    @Value("${jwt.access-token-expiration:3600000}") // 60 minutes
     private long accessTokenExpiration;
 
     @Value("${jwt.refresh-token-expiration:604800000}") // 7 days
