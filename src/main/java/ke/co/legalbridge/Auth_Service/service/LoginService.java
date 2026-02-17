@@ -26,6 +26,7 @@ public class LoginService {
     private final SessionRepo sessionRepo;
 
     public ResponseDTO login(LoginRequestDTO loginRequestDTO, HttpServletRequest request) {
+        log.info("Attempting login with email: [{}]", loginRequestDTO.getEmail());
 
         // Find User
         User user = userRepo.findByEmail(loginRequestDTO.getEmail())

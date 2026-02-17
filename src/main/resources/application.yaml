@@ -27,14 +27,17 @@ spring:
       emailSignup: x.signup
       emailPasswordReset: x.password-reset
       profileUpdate: x.update-profile
+      accountDeactivation: x.account-deactivation
     queues:
       emailSignup: q.email.signup
       emailPasswordReset: q.password.reset
       profileUpdate: q.update.profile
+      accountDeactivation: q.account.deactivate
     routing-keys:
       emailSignup: user.signup.email
       emailPasswordReset: user.password.reset
       profileUpdate: user.profile.update
+      accountDeactivation: user.account.deactivate
 
 jwt:
   secret: ${JWT_SECRET}
@@ -43,3 +46,14 @@ app:
   password-reset:
     token-expiry-hours: 1
     prevent-reuse: true
+
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+
+        orm:
+          jdbc:
+            bind: TRACE
