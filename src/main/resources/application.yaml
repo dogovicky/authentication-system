@@ -57,3 +57,12 @@ logging:
         orm:
           jdbc:
             bind: TRACE
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+  endpoint:
+    prometheus:
+      access: UNRESTRICTED
+

@@ -126,6 +126,12 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+			<scope>compile</scope>
+		</dependency>
+
 
 		<!-- Flyway Migration -->
 		<dependency>
