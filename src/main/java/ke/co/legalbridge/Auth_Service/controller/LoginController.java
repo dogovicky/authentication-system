@@ -1,5 +1,8 @@
 package ke.co.legalbridge.Auth_Service.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import ke.co.legalbridge.Auth_Service.dto.LoginRequestDTO;
@@ -19,10 +22,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 @Slf4j
 @RequiredArgsConstructor
+@Tag(name = "Authentication", description = "Authentication of login requests.")
 public class LoginController {
 
     private final LoginService loginService;
 
+    @Operation(summary = "Login User")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Successful Login"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Invalid credentials")
+    })
     @PostMapping("/login")
     private ResponseEntity<ApiResponse<ResponseDTO>> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO, HttpServletRequest request) {
 

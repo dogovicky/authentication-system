@@ -1,5 +1,6 @@
 package ke.co.legalbridge.Auth_Service.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import ke.co.legalbridge.Auth_Service.dto.ResponseDTO;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
+@Tag(name = "Authentication", description = "Auth related operations")
 public class RegistrationController {
 
     private final RegistrationService registrationService;

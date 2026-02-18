@@ -132,6 +132,13 @@
 			<scope>compile</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>3.0.0</version>
+			<scope>compile</scope>
+		</dependency>
+
 
 		<!-- Flyway Migration -->
 		<dependency>
