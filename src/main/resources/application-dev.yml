@@ -1,0 +1,64 @@
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  flyway:
+    enabled: false
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    user: ${DB_USER}
+    password: ${DB_PASSWORD}
+    url: ${DB_URL}
+    schemas: public
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USER}
+    password: ${RABBITMQ_PASSWORD}
+
+    exchanges:
+      emailSignup: x.signup
+      emailPasswordReset: x.password-reset
+      profileUpdate: x.update-profile
+      accountDeactivation: x.account-deactivation
+    queues:
+      emailSignup: q.email.signup
+      emailPasswordReset: q.password.reset
+      profileUpdate: q.update.profile
+      accountDeactivation: q.account.deactivate
+    routing-keys:
+      emailSignup: user.signup.email
+      emailPasswordReset: user.password.reset
+      profileUpdate: user.profile.update
+      accountDeactivation: user.account.deactivate
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+  endpoint:
+    prometheus:
+      access: UNRESTRICTED
+
+springdoc:
+  swagger-ui:
+    enabled: true
+
+logging:
+  level:
+    web: info
+#    root: debug
+
+    org:
+      hibernate:
+        SQL: DEBUG
+
+        orm:
+          jdbc:
+            bind: trace
