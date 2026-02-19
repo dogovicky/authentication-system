@@ -1,5 +1,6 @@
 package ke.co.legalbridge.Auth_Service.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import ke.co.legalbridge.Auth_Service.dto.LogoutRequestDTO;
 import ke.co.legalbridge.Auth_Service.dto.RefreshTokenRequestDTO;
@@ -20,6 +21,7 @@ import java.util.List;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Session Service", description = "Session management service")
 public class SessionController {
 
     private final SessionService sessionService;

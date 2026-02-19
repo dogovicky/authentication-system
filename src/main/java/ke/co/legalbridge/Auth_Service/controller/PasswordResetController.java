@@ -1,5 +1,6 @@
 package ke.co.legalbridge.Auth_Service.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import ke.co.legalbridge.Auth_Service.dto.PasswordResetConfirmDTO;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth/password-reset")
+@Tag(name = "Password Reset Service", description = "Handles password reset requests")
 public class PasswordResetController {
 
     private final PasswordResetService resetService;

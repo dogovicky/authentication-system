@@ -1,5 +1,6 @@
 package ke.co.legalbridge.Auth_Service.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import ke.co.legalbridge.Auth_Service.dto.DeleteAccountRequestDTO;
 import ke.co.legalbridge.Auth_Service.service.DeleteAccountService;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/account")
+@Tag(name = "Delete Account Service", description = "Deactivates accounts on delete requests.")
 public class DeleteAccountController {
 
     private final DeleteAccountService deleteAccountService;

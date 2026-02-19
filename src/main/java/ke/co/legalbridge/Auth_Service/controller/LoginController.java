@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 @Slf4j
 @RequiredArgsConstructor
-@Tag(name = "Authentication", description = "Authentication of login requests.")
+@Tag(name = "Login Service", description = "Handles login requests and issues JWT.")
 public class LoginController {
 
     private final LoginService loginService;
