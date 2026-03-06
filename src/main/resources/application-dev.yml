@@ -52,12 +52,20 @@ springdoc:
 
 logging:
   level:
-    web: info
-#    root: debug
+    web: debug
+    root: info
 
     org:
+      springframework:
+        security:
+          config:
+            annotation:
+              authentication:
+                configuration:
+                  InitializeUserDetailsBeanManagerConfigurer: ERROR
       hibernate:
         SQL: DEBUG
+
 
         orm:
           jdbc:
