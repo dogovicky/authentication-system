@@ -1,11 +1,19 @@
 package ke.co.legalbridge.authservice.service;
 
 import ke.co.legalbridge.authservice.components.RabbitMQProperties;
+
+import ke.co.legalbridge.authservice.events.UserPayload;
+import ke.co.legalbridge.authservice.events.UserRegisteredEvent;
 import ke.co.legalbridge.sharedlibraries.exceptions.TechnicalException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.ObjectMapper;
+
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -14,6 +22,27 @@ public class RabbitMQPublisher {
 
     private final RabbitTemplate rabbitTemplate;
     private final RabbitMQProperties properties;
+    private final ObjectMapper objectMapper;
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void testConnection() {
+        log.info("================ Testing rabbitmq connection==============");
+        try {
+
+            UserRegisteredEvent event = new UserRegisteredEvent(
+                    UUID.randomUUID().toString(), "EmailVerificationEvent",
+                    "auth-service", new UserPayload(UUID.randomUUID().toString(),
+                    "test@gmail.com"));
+
+            byte[] payload = objectMapper.writeValueAsBytes(event);
+            log.info("Payload as byte: {}", payload.length);
+
+            rabbitTemplate.convertAndSend("legal_bridge.events", "auth.user_registered", payload);
+            log.info("============== Message successfully published ============");
+        } catch (Exception ex) {
+            log.error("Error occurred while publishing email verification event", ex);
+        }
+    }
 
     public void publishMessage(String exchangeName, String routingKey, Object payload) {
         log.info("Publishing message...: {}, {}", exchangeName, routingKey);

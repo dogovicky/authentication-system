@@ -1,0 +1,3 @@
+[submodule "contracts"]
+	path = contracts
+	url = git@github.com:Imbizzo-Technologies/legal-bridge-event-contracts.git

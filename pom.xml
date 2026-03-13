@@ -218,6 +218,18 @@
 			<version>1.6.3</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+			<version>4.28.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java-util</artifactId>
+			<version>4.28.2</version>
+		</dependency>
+
 	</dependencies>
 
 	<dependencyManagement>
@@ -285,6 +297,24 @@
 					<driver>org.postgresql.Driver</driver>
 					<schemas>public</schemas>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>contracts/generated/java/ke/co/legalbridge/auth</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 
 		</plugins>

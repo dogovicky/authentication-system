@@ -48,7 +48,7 @@ public class RabbitMQConfig {
         connectionFactory.setPort(port);
         connectionFactory.setUsername(username);
         connectionFactory.setPassword(password);
-        connectionFactory.setVirtualHost("/auth");
+        connectionFactory.setVirtualHost("frrgpobq");
         connectionFactory.setConnectionTimeout(30000); // 30 seconds
 
         connectionFactory.setPublisherConfirmType(CachingConnectionFactory.ConfirmType.CORRELATED);

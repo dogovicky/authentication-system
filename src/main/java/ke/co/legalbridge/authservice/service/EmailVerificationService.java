@@ -164,18 +164,7 @@ public class EmailVerificationService {
      */
     public void sendVerificationEmail(User user, String verificationLink) {
         // TODO: Call Elixir Service to send email (Sync Communication)
-        // Payload
-        /*
-         {
-            "recipient": user.getUserId,
-            "type": mail,
-            "data": {
-                "name": user.getFirstName(),
-                "verificationLink": verificationLink,
-                "expiresIn": tokenExpiryInMinutes
-             }
-          }
-         */
+        rabbitMQPublisher.publishMessage("emailSignup", "emailSignup", verificationLink);
         log.info("A verification email would be sent to {}: {}", user.getEmail(), verificationLink);
     }
 
