@@ -2,8 +2,9 @@ package ke.co.legalbridge.authservice.service;
 
 import ke.co.legalbridge.authservice.components.RabbitMQProperties;
 
-import ke.co.legalbridge.authservice.events.UserPayload;
-import ke.co.legalbridge.authservice.events.UserRegisteredEvent;
+
+import ke.co.legalbridge.auth.UserRegisteredEvent;
+import ke.co.legalbridge.auth.UserPayload;
 import ke.co.legalbridge.sharedlibraries.exceptions.TechnicalException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,15 +30,22 @@ public class RabbitMQPublisher {
         log.info("================ Testing rabbitmq connection==============");
         try {
 
-            UserRegisteredEvent event = new UserRegisteredEvent(
-                    UUID.randomUUID().toString(), "EmailVerificationEvent",
-                    "auth-service", new UserPayload(UUID.randomUUID().toString(),
-                    "test@gmail.com"));
+            UserRegisteredEvent event = UserRegisteredEvent.newBuilder()
+                    .setEventId(UUID.randomUUID().toString())
+                    .setEventType("UserRegisteredEvent")
+                    .setSource("auth-service")
+                    .setPayload(
+                           UserPayload.newBuilder()
+                                   .setUserId(UUID.randomUUID().toString())
+                                   .setEmail("test@example.com")
+                                   .build()
+                    )
+                    .build();
 
-            byte[] payload = objectMapper.writeValueAsBytes(event);
-            log.info("Payload as byte: {}", payload.length);
 
-            rabbitTemplate.convertAndSend("legal_bridge.events", "auth.user_registered", payload);
+            log.info("Payload as byte: {}", event.getPayload());
+
+            rabbitTemplate.convertAndSend("legal_bridge.events", "auth.user_registered", event.toByteArray());
             log.info("============== Message successfully published ============");
         } catch (Exception ex) {
             log.error("Error occurred while publishing email verification event", ex);
