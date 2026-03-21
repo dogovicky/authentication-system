@@ -2,9 +2,6 @@ package ke.co.legalbridge.authservice.service;
 
 import ke.co.legalbridge.authservice.components.RabbitMQProperties;
 
-
-import ke.co.legalbridge.auth.UserRegisteredEvent;
-import ke.co.legalbridge.auth.UserPayload;
 import ke.co.legalbridge.sharedlibraries.exceptions.TechnicalException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,23 +26,10 @@ public class RabbitMQPublisher {
     public void testConnection() {
         log.info("================ Testing rabbitmq connection==============");
         try {
+            String payload = "dogo@email.com";
+            log.info("Payload as byte: {}", payload);
 
-            UserRegisteredEvent event = UserRegisteredEvent.newBuilder()
-                    .setEventId(UUID.randomUUID().toString())
-                    .setEventType("UserRegisteredEvent")
-                    .setSource("auth-service")
-                    .setPayload(
-                           UserPayload.newBuilder()
-                                   .setUserId(UUID.randomUUID().toString())
-                                   .setEmail("test@example.com")
-                                   .build()
-                    )
-                    .build();
-
-
-            log.info("Payload as byte: {}", event.getPayload());
-
-            rabbitTemplate.convertAndSend("legal_bridge.events", "auth.user_registered", event.toByteArray());
+            rabbitTemplate.convertAndSend("legal_bridge.events", "auth.user_registered", payload);
             log.info("============== Message successfully published ============");
         } catch (Exception ex) {
             log.error("Error occurred while publishing email verification event", ex);
