@@ -2,9 +2,6 @@ package ke.co.legalbridge.authservice.service;
 
 import ke.co.legalbridge.authservice.dto.ResponseDTO;
 import ke.co.legalbridge.authservice.dto.SignUpRequestDTO;
-import ke.co.legalbridge.authservice.exception.InvalidRegistrationException;
-import ke.co.legalbridge.authservice.exception.UserAlreadyExistsException;
-import ke.co.legalbridge.authservice.exception.WeakPasswordException;
 import ke.co.legalbridge.authservice.mappers.AuthMapper;
 import ke.co.legalbridge.authservice.model.User;
 import ke.co.legalbridge.authservice.repository.UserRepo;

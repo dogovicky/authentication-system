@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import ke.co.legalbridge.authservice.dto.PasswordResetConfirmDTO;
 import ke.co.legalbridge.authservice.dto.PasswordResetRequestDTO;
 import ke.co.legalbridge.authservice.dto.PasswordResetResponseDTO;
-import ke.co.legalbridge.authservice.exception.InvalidTokenException;
 import ke.co.legalbridge.authservice.model.PasswordResetToken;
 import ke.co.legalbridge.authservice.model.User;
 import ke.co.legalbridge.authservice.repository.PasswordResetTokenRepo;

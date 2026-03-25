@@ -2,7 +2,6 @@ package ke.co.legalbridge.authservice.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import ke.co.legalbridge.authservice.dto.EmailVerificationResponseDTO;
-import ke.co.legalbridge.authservice.exception.InvalidTokenException;
 import ke.co.legalbridge.authservice.model.EmailVerificationToken;
 import ke.co.legalbridge.authservice.model.User;
 import ke.co.legalbridge.authservice.model.UserSession;
