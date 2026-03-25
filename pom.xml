@@ -206,11 +206,11 @@
 		</dependency>
 
 		<!-- Custom Shared Libraries Dependency -->
-		<dependency>
-			<groupId>ke.co.legalbridge</groupId>
-			<artifactId>shared-libraries</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>ke.co.legalbridge</groupId>-->
+<!--			<artifactId>shared-libraries</artifactId>-->
+<!--			<version>0.0.1-SNAPSHOT</version>-->
+<!--		</dependency>-->
 
 		<dependency>
 			<groupId>org.mapstruct</groupId>
