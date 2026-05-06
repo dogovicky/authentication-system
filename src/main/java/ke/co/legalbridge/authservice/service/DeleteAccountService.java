@@ -2,11 +2,11 @@ package ke.co.legalbridge.authservice.service;
 
 import ke.co.legalbridge.authservice.dto.DeleteAccountRequestDTO;
 import ke.co.legalbridge.authservice.dto.events.AccountDeactivatedEvent;
+import ke.co.legalbridge.authservice.exception.AuthSecurityException;
 import ke.co.legalbridge.authservice.model.User;
 import ke.co.legalbridge.authservice.repository.SessionRepo;
 import ke.co.legalbridge.authservice.repository.UserRepo;
-import ke.co.legalbridge.sharedlibraries.exceptions.AuthSecurityException;
-import ke.co.legalbridge.sharedlibraries.security.SecurityContextUtil;
+import ke.co.legalbridge.authservice.utilities.SecurityContextUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;

@@ -1,13 +1,14 @@
 package ke.co.legalbridge.authservice.service;
 
 import jakarta.servlet.http.HttpServletRequest;
-import ke.co.legalbridge.authservice.dto.LoginRequestDTO;
+import ke.co.legalbridge.authservice.dto.login.LoginRequestDTO;
 import ke.co.legalbridge.authservice.dto.ResponseDTO;
+import ke.co.legalbridge.authservice.exception.AuthSecurityException;
 import ke.co.legalbridge.authservice.model.User;
 import ke.co.legalbridge.authservice.model.UserSession;
 import ke.co.legalbridge.authservice.repository.SessionRepo;
 import ke.co.legalbridge.authservice.repository.UserRepo;
-import ke.co.legalbridge.sharedlibraries.exceptions.AuthSecurityException;
+import ke.co.legalbridge.authservice.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,7 +27,7 @@ public class LoginService {
     private final SessionRepo sessionRepo;
 
     public ResponseDTO login(LoginRequestDTO loginRequestDTO, HttpServletRequest request) {
-        log.info("Attempting login with email: [{}]", loginRequestDTO.getEmail());
+        log.info("============== Attempting login with email: [{}] ================", loginRequestDTO.getEmail());
 
         // Find User
         User user = userRepo.findByEmail(loginRequestDTO.getEmail())
@@ -46,6 +47,7 @@ public class LoginService {
         String ipAddress = extractIpAddress(request);
 
         //Check if session already exists for this device
+        // TODO: Duplicate device info constraint causes exceptions
         UserSession session = sessionRepo.findByUserIdAndDeviceInfoAndIsRevokedFalse(user.getId(), deviceInfo)
                 .orElse(null);
 
@@ -59,7 +61,7 @@ public class LoginService {
             session.setIpAddress(ipAddress);
             refreshToken = session.getRefreshToken();
 
-            log.info("Reusing existing session for user: {} on device: {}",
+            log.info("================= Reusing existing session for user: {} on device: {} ==================",
                     user.getEmail(), deviceInfo);
         } else {
             // Create a new session only if no valid one exists
@@ -76,7 +78,7 @@ public class LoginService {
                     .lastUsedAt(LocalDateTime.now())
                     .build();
 
-            log.info("Created new session for user: {} on device: {}",
+            log.info("================== Created new session for user: {} on device: {} ====================",
                     user.getEmail(), deviceInfo);
         }
 
@@ -87,13 +89,12 @@ public class LoginService {
         user.setLastLoginAt(LocalDateTime.now());
         userRepo.save(user);
 
-        log.info("User logged in: {} from IP: {}", user.getEmail(), session.getIpAddress());
+        log.info("================== User logged in: {} from IP: {} ===================", user.getEmail(), session.getIpAddress());
 
         // Build response
         return ResponseDTO.builder()
                 .email(user.getEmail())
                 .userId(user.getId().toString())
-                .userType(user.getUserType().name())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .tokenType("Bearer")

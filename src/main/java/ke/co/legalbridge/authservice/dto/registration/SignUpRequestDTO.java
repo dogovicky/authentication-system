@@ -1,8 +1,7 @@
-package ke.co.legalbridge.authservice.dto;
+package ke.co.legalbridge.authservice.dto.registration;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import ke.co.legalbridge.sharedlibraries.enums.UserType;
 import lombok.Getter;
 
 @Getter
@@ -13,10 +12,7 @@ public class SignUpRequestDTO {
     private String email;
 
     @NotBlank(message = "Create password")
-    //@Pattern(regexp = "[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?]")
+//    @Pattern(regexp = "[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?]")
     private String password;
-
-    //@NotBlank
-    private UserType userType;
 
 }

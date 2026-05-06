@@ -5,11 +5,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import ke.co.legalbridge.authservice.dto.LoginRequestDTO;
+import ke.co.legalbridge.authservice.apiresponse.ApiResponse;
+import ke.co.legalbridge.authservice.apiresponse.ResponseEntityBuilder;
+import ke.co.legalbridge.authservice.dto.login.LoginRequestDTO;
 import ke.co.legalbridge.authservice.dto.ResponseDTO;
 import ke.co.legalbridge.authservice.service.LoginService;
-import ke.co.legalbridge.sharedlibraries.response.ApiResponse;
-import ke.co.legalbridge.sharedlibraries.response.ResponseEntityBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +39,7 @@ public class LoginController {
 
         ResponseDTO response = loginService.login(loginRequestDTO, request);
 
-        return ResponseEntityBuilder.accepted(response, "Login Successful")
+        return ResponseEntityBuilder.ok(response, "Login Successful")
                 .withProcessingTime(startTime)
                 .withMetadata(
                         request.getHeader("X-Request-ID"),

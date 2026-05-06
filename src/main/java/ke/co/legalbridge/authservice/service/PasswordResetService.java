@@ -1,20 +1,20 @@
 package ke.co.legalbridge.authservice.service;
 
 import jakarta.servlet.http.HttpServletRequest;
-import ke.co.legalbridge.authservice.dto.PasswordResetConfirmDTO;
-import ke.co.legalbridge.authservice.dto.PasswordResetRequestDTO;
-import ke.co.legalbridge.authservice.dto.PasswordResetResponseDTO;
+import ke.co.legalbridge.authservice.dto.passwordreset.PasswordResetConfirmDTO;
+import ke.co.legalbridge.authservice.dto.passwordreset.PasswordResetRequestDTO;
+import ke.co.legalbridge.authservice.dto.passwordreset.PasswordResetResponseDTO;
+import ke.co.legalbridge.authservice.enumerations.ErrorCode;
+import ke.co.legalbridge.authservice.exception.AuthSecurityException;
+import ke.co.legalbridge.authservice.exception.BusinessException;
+import ke.co.legalbridge.authservice.exception.TechnicalException;
+import ke.co.legalbridge.authservice.exception.ValidationException;
 import ke.co.legalbridge.authservice.model.PasswordResetToken;
 import ke.co.legalbridge.authservice.model.User;
 import ke.co.legalbridge.authservice.repository.PasswordResetTokenRepo;
 import ke.co.legalbridge.authservice.repository.SessionRepo;
 import ke.co.legalbridge.authservice.repository.UserRepo;
-import ke.co.legalbridge.sharedlibraries.enums.ErrorCode;
-import ke.co.legalbridge.sharedlibraries.exceptions.AuthSecurityException;
-import ke.co.legalbridge.sharedlibraries.exceptions.BusinessException;
-import ke.co.legalbridge.sharedlibraries.exceptions.TechnicalException;
-import ke.co.legalbridge.sharedlibraries.exceptions.ValidationException;
-import ke.co.legalbridge.sharedlibraries.security.PasswordUtil;
+import ke.co.legalbridge.authservice.utilities.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -126,7 +126,7 @@ public class PasswordResetService {
 
         if (!resetToken.isValid()) {
             log.warn("Invalid reset token attempted: expired={}, used={}", resetToken.isExpired(), resetToken.isUsed());
-            throw new InvalidTokenException("Invalid or expired token");
+            throw new BusinessException(ErrorCode.INVALID_TOKEN, "Invalid or expired token");
         }
 
         // Get user to return email
@@ -162,12 +162,12 @@ public class PasswordResetService {
 
         // Find and validate token
         PasswordResetToken resetToken = passwordResetTokenRepo.findByToken(request.getToken())
-                .orElseThrow(() -> new InvalidTokenException("Invalid or expired reset token"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_TOKEN, "Invalid or expired reset token"));
 
         if (!resetToken.isValid()) {
             log.warn("Attempted to use invalid reset token: expired={}, used={}",
                     resetToken.isExpired(), resetToken.isUsed());
-            throw new InvalidTokenException("Invalid or expired reset token");
+            throw new BusinessException(ErrorCode.INVALID_TOKEN, "Invalid or expired reset token");
         }
 
         // Get User

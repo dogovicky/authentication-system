@@ -1,17 +1,18 @@
 package ke.co.legalbridge.authservice.service;
 
 import jakarta.servlet.http.HttpServletRequest;
-import ke.co.legalbridge.authservice.dto.EmailVerificationResponseDTO;
+import ke.co.legalbridge.authservice.dto.emailvalidation.EmailVerificationResponseDTO;
+import ke.co.legalbridge.authservice.enumerations.ErrorCode;
+import ke.co.legalbridge.authservice.exception.AuthSecurityException;
+import ke.co.legalbridge.authservice.exception.BusinessException;
+import ke.co.legalbridge.authservice.exception.TechnicalException;
 import ke.co.legalbridge.authservice.model.EmailVerificationToken;
 import ke.co.legalbridge.authservice.model.User;
 import ke.co.legalbridge.authservice.model.UserSession;
 import ke.co.legalbridge.authservice.repository.EmailVerificationTokenRepo;
 import ke.co.legalbridge.authservice.repository.SessionRepo;
 import ke.co.legalbridge.authservice.repository.UserRepo;
-import ke.co.legalbridge.sharedlibraries.dtos.common.UserDTO;
-import ke.co.legalbridge.sharedlibraries.exceptions.AuthSecurityException;
-import ke.co.legalbridge.sharedlibraries.exceptions.BusinessException;
-import ke.co.legalbridge.sharedlibraries.exceptions.TechnicalException;
+import ke.co.legalbridge.authservice.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -93,7 +94,7 @@ public class EmailVerificationService {
         // If token exists, check validity
         if (!verificationToken.isValid()) {
             log.warn("Invalid verification token.");
-            throw new InvalidTokenException("Verification link expired. Please request another link.");
+            throw new BusinessException(ErrorCode.INVALID_TOKEN, "Verification link expired. Please request another link.");
         }
 
         // Get User
@@ -130,9 +131,9 @@ public class EmailVerificationService {
 
         // TODO: Publish UserCreatedEvent (to Notification Service, Profile Service)
         // Once verification is successful, send user infor to Profile Service for account updating
-        UserDTO userDTO = new UserDTO(user.getId(), user.getEmail(), user.getUserType().name(), user.isVerified(), user.isActive(), user.getLastLoginAt(), user.getCreatedAt());
-        rabbitMQPublisher.publishMessage(
-                "x.update-profile", "user.profile.update", userDTO);
+//        UserDTO userDTO = new UserDTO(user.getId(), user.getEmail(), user.getUserType().name(), user.isVerified(), user.isActive(), user.getLastLoginAt(), user.getCreatedAt());
+//        rabbitMQPublisher.publishMessage(
+//                "x.update-profile", "user.profile.update", userDTO);
 
         return EmailVerificationResponseDTO.builder()
                 .success(true)

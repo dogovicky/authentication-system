@@ -1,7 +1,7 @@
 package ke.co.legalbridge.authservice.mappers;
 
 import ke.co.legalbridge.authservice.dto.ResponseDTO;
-import ke.co.legalbridge.authservice.dto.SignUpRequestDTO;
+import ke.co.legalbridge.authservice.dto.registration.SignUpRequestDTO;
 import ke.co.legalbridge.authservice.model.User;
 import org.mapstruct.*;
 
@@ -34,7 +34,6 @@ public interface AuthMapper {
      */
 
     @Mapping(source = "id", target = "userId")
-    @Mapping(source = "userType", target = "userType")
     @Mapping(target = "accessToken", ignore = true)
     @Mapping(target = "refreshToken", ignore = true)
     @Mapping(target = "tokenType", ignore = true)
