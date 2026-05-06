@@ -4,12 +4,13 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import ke.co.legalbridge.sharedlibraries.security.JwtUtil;
-import ke.co.legalbridge.sharedlibraries.security.UserPrincipal;
+import ke.co.legalbridge.authservice.utilities.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -46,11 +48,14 @@ public class JwtFilter extends OncePerRequestFilter {
                 // Extract claims using JWT util
                 String userId = jwtUtil.extractUserId(token);
                 String email = jwtUtil.extractEmail(token);
-                String userType = jwtUtil.extractUserType(token);
                 Set<String> roles = jwtUtil.extractRoles(token);
 
+                Set<GrantedAuthority> authorities = roles.stream()
+                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                        .collect(Collectors.toSet());
+
                 // Create UserPrincipal
-                UserPrincipal userPrincipal = UserPrincipal.fromToken(userId, email, roles, userType);
+                UserPrincipal userPrincipal = UserPrincipal.fromToken(userId, email, authorities);
 
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userPrincipal, null, userPrincipal.getAuthorities()
@@ -59,11 +64,11 @@ public class JwtFilter extends OncePerRequestFilter {
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                log.debug("Authenticated user: {} with roles: {}", email, roles);
+                log.debug("=========== Authenticated user: {} with roles: {} ================", email, roles);
             }
 
         } catch (Exception ex) {
-            log.error("JWT authentication failed: {}", ex.getMessage());
+            log.error("============== JWT authentication failed: {} ===============", ex.getMessage());
         }
 
         filterChain.doFilter(request, response);

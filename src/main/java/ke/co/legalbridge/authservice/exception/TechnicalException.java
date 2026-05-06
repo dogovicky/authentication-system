@@ -13,7 +13,7 @@ public class TechnicalException extends BaseException {
     }
 
     public TechnicalException(String message, String serviceName) {
-        super(message, "TECHNICAL_ERROR", HttpStatus.INTERNAL_SERVER_ERROR, serviceName);
+        super(message, ErrorCode.SERVICE_UNAVAILABLE, HttpStatus.INTERNAL_SERVER_ERROR, serviceName);
     }
 
     // ========== Database/System Factory Methods ==========

@@ -1,7 +1,7 @@
 package ke.co.legalbridge.authservice.configuration;
 
 import ke.co.legalbridge.authservice.security.JwtFilter;
-import ke.co.legalbridge.authservice.service.MyUserDetailsService;
+import ke.co.legalbridge.authservice.security.MyUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

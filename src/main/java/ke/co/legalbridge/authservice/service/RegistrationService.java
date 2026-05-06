@@ -1,18 +1,24 @@
 package ke.co.legalbridge.authservice.service;
 
 import ke.co.legalbridge.authservice.dto.ResponseDTO;
-import ke.co.legalbridge.authservice.dto.SignUpRequestDTO;
+import ke.co.legalbridge.authservice.dto.registration.SignUpRequestDTO;
+import ke.co.legalbridge.authservice.enumerations.ErrorCode;
+import ke.co.legalbridge.authservice.exception.BusinessException;
+import ke.co.legalbridge.authservice.exception.TechnicalException;
 import ke.co.legalbridge.authservice.mappers.AuthMapper;
+import ke.co.legalbridge.authservice.model.Role;
 import ke.co.legalbridge.authservice.model.User;
+import ke.co.legalbridge.authservice.repository.RoleRepository;
 import ke.co.legalbridge.authservice.repository.UserRepo;
-import ke.co.legalbridge.sharedlibraries.exceptions.TechnicalException;
-import ke.co.legalbridge.sharedlibraries.security.PasswordUtil;
+import ke.co.legalbridge.authservice.utilities.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Service
@@ -25,18 +31,14 @@ public class RegistrationService {
     private final PasswordUtil passwordUtil = new PasswordUtil();
     private final AuthMapper authMapper;
     private final EmailVerificationService verificationService;
+    private final RoleRepository roleRepository;
 
 
     public ResponseDTO register(SignUpRequestDTO signUpRequestDTO) {
 
         // Check if User exists in the db
         if (userRepo.existsByEmail(signUpRequestDTO.getEmail())) {
-            throw new UserAlreadyExistsException(signUpRequestDTO.getEmail());
-        }
-
-        // Validate User Type
-        if (signUpRequestDTO.getUserType() == null) {
-            throw InvalidRegistrationException.missingUserType();
+            throw new BusinessException(ErrorCode.USER_ALREADY_EXISTS, signUpRequestDTO.getEmail());
         }
 
         // Validate password strength using password util
@@ -50,6 +52,8 @@ public class RegistrationService {
             user.setPasswordHash(passwordEncoder.encode(signUpRequestDTO.getPassword()));
             user.setUpdatedAt(LocalDateTime.now());
             user.setCreatedAt(LocalDateTime.now());
+            user.setRoles(getDefaultRole());
+
 
             // Save user
             User savedUser = userRepo.save(user);
@@ -62,7 +66,6 @@ public class RegistrationService {
             return ResponseDTO.builder()
                     .userId(savedUser.getId().toString())
                     .email(savedUser.getEmail())
-                    .userType(savedUser.getUserType().name())
                     .isActive(false)
                     .isVerified(false)
                     .build();
@@ -79,8 +82,16 @@ public class RegistrationService {
         PasswordUtil.PasswordValidationResult validationResult = passwordUtil.validationResult(password);
 
         if (!validationResult.isValid()) {
-            throw WeakPasswordException.fromValidationResult(validationResult);
+            throw new BusinessException(ErrorCode.PASSWORD_TOO_WEAK, password);
         }
+    }
+
+    // Get default role
+    private Set<Role> getDefaultRole() {
+        Role userRole = roleRepository.findByName("USER")
+                .orElseThrow(() -> new BusinessException(ErrorCode.ROLE_NOT_FOUND, "No roles matched your request."));
+
+        return Set.of(userRole);
     }
 
 }

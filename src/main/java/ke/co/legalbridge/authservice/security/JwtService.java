@@ -1,7 +1,8 @@
-package ke.co.legalbridge.authservice.service;
+package ke.co.legalbridge.authservice.security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import ke.co.legalbridge.authservice.model.Role;
 import ke.co.legalbridge.authservice.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +20,7 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    @Value("${jwt.issuer:legal-bridge}")
+    @Value("${jwt.issuer:auth-service}")
     private String issuer;
 
     @Value("${jwt.access-token-expiration:3600000}") // 60 minutes
@@ -37,11 +39,12 @@ public class JwtService {
 
         Map<String, Object> claims = new HashMap<>();
 
-        Set<String> roles = Set.of(user.getUserType().name());
+        Set<String> roles = user.getRoles().stream()
+                .map(Role::getName)
+                        .collect(Collectors.toSet());
         claims.put("roles", roles);
         claims.put("userId", user.getId().toString());
         claims.put("email", user.getEmail());
-        claims.put("userType", user.getUserType().name());
         claims.put("type", "access"); // Access Token type
 
 

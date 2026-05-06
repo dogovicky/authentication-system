@@ -1,4 +1,4 @@
-package ke.co.legalbridge.authservice.dto;
+package ke.co.legalbridge.authservice.dto.emailvalidation;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

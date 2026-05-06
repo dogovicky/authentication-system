@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 
 @Data
 @AllArgsConstructor
@@ -14,7 +16,6 @@ public class ResponseDTO {
 
     private String userId;
     private String email;
-    private String userType;
     private boolean isVerified;
     private boolean isActive;
 

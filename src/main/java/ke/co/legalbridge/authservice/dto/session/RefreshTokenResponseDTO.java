@@ -1,4 +1,4 @@
-package ke.co.legalbridge.authservice.dto;
+package ke.co.legalbridge.authservice.dto.session;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

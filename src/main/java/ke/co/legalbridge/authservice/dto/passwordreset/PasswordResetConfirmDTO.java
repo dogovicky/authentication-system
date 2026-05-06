@@ -1,4 +1,4 @@
-package ke.co.legalbridge.authservice.dto;
+package ke.co.legalbridge.authservice.dto.passwordreset;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

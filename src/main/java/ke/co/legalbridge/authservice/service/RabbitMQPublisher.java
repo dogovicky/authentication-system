@@ -2,7 +2,7 @@ package ke.co.legalbridge.authservice.service;
 
 import ke.co.legalbridge.authservice.components.RabbitMQProperties;
 
-import ke.co.legalbridge.sharedlibraries.exceptions.TechnicalException;
+import ke.co.legalbridge.authservice.exception.TechnicalException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -22,7 +22,7 @@ public class RabbitMQPublisher {
     private final RabbitMQProperties properties;
     private final ObjectMapper objectMapper;
 
-    @EventListener(ApplicationReadyEvent.class)
+    //@EventListener(ApplicationReadyEvent.class)
     public void testConnection() {
         log.info("================ Testing rabbitmq connection==============");
         try {

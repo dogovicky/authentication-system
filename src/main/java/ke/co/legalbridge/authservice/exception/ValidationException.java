@@ -16,11 +16,11 @@ public class ValidationException extends BaseException {
     }
 
     public ValidationException(String message, String serviceName) {
-        super(message, "VALIDATION_ERROR", HttpStatus.BAD_REQUEST, serviceName);
+        super(message, ErrorCode.VALIDATION_ERROR, HttpStatus.BAD_REQUEST, serviceName);
     }
 
     public ValidationException(String message, Map<String, String> fieldErrors, String serviceName) {
-        super(message, "VALIDATION_ERROR", HttpStatus.BAD_REQUEST, serviceName);
+        super(message, ErrorCode.VALIDATION_ERROR, HttpStatus.BAD_REQUEST, serviceName);
         addDetail("fieldErrors", fieldErrors);
     }
 
