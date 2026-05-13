@@ -67,7 +67,7 @@ The system provides secure authentication flows including email verification, pa
 
 ---
 
-# 📂 Project Structure
+## Project Structure
 
 ```bash
 src
@@ -87,7 +87,7 @@ src
 
 ---
 
-# 🔑 Core Authentication Flows
+# Core Authentication Flows
 
 ## 1. User Registration
 
@@ -136,7 +136,7 @@ User → OAuth2 Provider (Google/GitHub)
 
 ---
 
-# 🧠 Adaptive MFA (Device-Based OTP)
+# Adaptive MFA (Device-Based OTP)
 
 This system supports adaptive MFA.
 
@@ -161,7 +161,7 @@ Known Device?
 
 ---
 
-# ⚡ Event-Driven Messaging
+# Event-Driven Messaging
 
 The system publishes events using Kafka and RabbitMQ.
 
@@ -180,7 +180,7 @@ The system publishes events using Kafka and RabbitMQ.
 
 ---
 
-# 🗄️ Database Design
+#  Database Design
 
 ## Main Entities
 
@@ -197,7 +197,7 @@ The system publishes events using Kafka and RabbitMQ.
 
 ---
 
-# 🔒 Security Practices
+# Security Practices
 
 - BCrypt Password Encoding
 - Short-Lived Access Tokens
@@ -211,7 +211,7 @@ The system publishes events using Kafka and RabbitMQ.
 
 ---
 
-# ⚙️ Environment Variables
+# Environment Variables
 
 Create a `.env` file:
 
@@ -250,7 +250,7 @@ GITHUB_CLIENT_SECRET=
 
 ---
 
-# ▶️ Running the Application
+# Running the Application
 
 ## Clone Repository
 
@@ -273,7 +273,7 @@ docker-compose up -d
 
 ---
 
-# 🐳 Docker Support
+# Docker Support
 
 ```bash
 docker-compose up --build
@@ -281,7 +281,7 @@ docker-compose up --build
 
 ---
 
-# 📮 API Endpoints
+# API Endpoints
 
 ## Authentication
 
@@ -321,7 +321,7 @@ docker-compose up --build
 
 ---
 
-# 🧪 Testing
+# Testing
 
 Run tests using:
 
@@ -343,7 +343,7 @@ Run tests using:
 
 ---
 
-# 🤝 Contributing
+# Contributing
 
 Contributions are welcome!
 
@@ -355,13 +355,13 @@ Contributions are welcome!
 
 ---
 
-# 📄 License
+# License
 
 This project is licensed under the MIT License.
 
 ---
 
-# ⭐ Support
+# Support
 
 If you found this project helpful:
 - Star the repository
@@ -370,6 +370,6 @@ If you found this project helpful:
 
 ---
 
-# 💻 Author
+# Author
 
 Built with ❤️ using Java & Spring Boot.
