@@ -16,9 +16,9 @@ public class OpenApiSecurityConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Legal Bridge - Authentication Service API")
+                        .title("Authentication Service API")
                         .version("1.0")
-                        .description("Legal Bridge API documentation"))
+                        .description("Authentication System API documentation"))
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .components(new Components()
                         .addSecuritySchemes("bearerAuth",
