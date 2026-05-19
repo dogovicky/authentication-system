@@ -1,6 +1,8 @@
 package ke.co.legalbridge.authservice.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import ke.co.legalbridge.authservice.dto.ResponseDTO;
+import ke.co.legalbridge.authservice.dto.events.EmailVerificationEvent;
 import ke.co.legalbridge.authservice.dto.registration.SignUpRequestDTO;
 import ke.co.legalbridge.authservice.enumerations.ErrorCode;
 import ke.co.legalbridge.authservice.exception.BusinessException;
@@ -10,15 +12,17 @@ import ke.co.legalbridge.authservice.model.Role;
 import ke.co.legalbridge.authservice.model.User;
 import ke.co.legalbridge.authservice.repository.RoleRepository;
 import ke.co.legalbridge.authservice.repository.UserRepo;
+import ke.co.legalbridge.authservice.utilities.EmailVerificationUtil;
 import ke.co.legalbridge.authservice.utilities.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 
 @Service
@@ -30,10 +34,12 @@ public class RegistrationService {
     private final PasswordEncoder passwordEncoder;
     private final PasswordUtil passwordUtil = new PasswordUtil();
     private final AuthMapper authMapper;
-    private final EmailVerificationService verificationService;
     private final RoleRepository roleRepository;
+    private final EmailVerificationUtil emailVerificationUtil;
+    private final OutboxService outboxService;
 
 
+    @Transactional
     public ResponseDTO register(SignUpRequestDTO signUpRequestDTO) {
 
         // Check if User exists in the db
@@ -57,10 +63,14 @@ public class RegistrationService {
 
             // Save user
             User savedUser = userRepo.save(user);
-            log.info("============== User registered successfully: {} ==============", savedUser.getEmail());
+            log.info("============== User registered successfully, sending email verification: {} ==============", savedUser.getEmail());
 
-            // TODO: Send verification email and verify account for user to continue
-            verificationService.requestVerificationEmail(savedUser.getEmail());
+            // Build Link
+            String verificationLink = emailVerificationUtil.buildVerificationLink(user);
+
+            // Create an EmailVerificationEvent and save it to outbox events
+            EmailVerificationEvent event = buildEmailEvent(user, verificationLink);
+            outboxService.saveOutboxEvent(event);
 
             // Map to response DTO
             return ResponseDTO.builder()
@@ -74,6 +84,12 @@ public class RegistrationService {
             throw TechnicalException.databaseError("auth-service").addDetail("email", signUpRequestDTO.getEmail());
         }
     }
+
+    public void verifyEmail() {
+
+    }
+
+    // ========================== HELPER METHODS ==========================
 
     /**
      * Validate password using shared PasswordUtil
@@ -92,6 +108,27 @@ public class RegistrationService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.ROLE_NOT_FOUND, "No roles matched your request."));
 
         return Set.of(userRole);
+    }
+
+    private EmailVerificationEvent buildEmailEvent(User user, String verificationLink) {
+        return EmailVerificationEvent.builder()
+                .eventId(UUID.randomUUID().toString())
+                .email(user.getEmail())
+                .verificationLink(verificationLink)
+                .build();
+    }
+
+    private String extractIpAddress(HttpServletRequest request) {
+        String xForwardedFor = request.getHeader("X-Forwarded-For");
+        if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
+            return xForwardedFor.split(",")[0].trim();
+        }
+        return request.getRemoteAddr();
+    }
+
+    private String extractDeviceInfo(HttpServletRequest request) {
+        String userAgent = request.getHeader("User-Agent");
+        return userAgent != null ? userAgent.substring(0, Math.min(userAgent.length(), 500)) : "Unknown";
     }
 
 }
