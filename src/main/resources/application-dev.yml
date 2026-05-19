@@ -42,6 +42,12 @@ spring:
     url: ${DB_URL}
     schemas: public
 
+  thymeleaf:
+    cache: false
+    mode: HTML
+    prefix: classpath/templates/
+    suffix: .html
+
   rabbitmq:
     host: ${RABBITMQ_HOST}
     port: ${RABBITMQ_PORT}
