@@ -30,7 +30,7 @@ public class OutboxService {
         try {
             OutboxEvent outboxEvent = OutboxEvent.builder()
                     .aggregateId(event.getEventId())
-                    .aggregateType(event.getEventType())
+                    .aggregateType(event.getClass().getName())
                     .eventType(event.getEventType())
                     .payload(objectMapper.writeValueAsString(event)) // Serialize event
                     .topic(event.getEventType())

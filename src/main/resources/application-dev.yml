@@ -1,5 +1,9 @@
 spring:
 
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: false
+
   kafka:
     producer:
       bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVER}
@@ -41,6 +45,13 @@ spring:
     password: ${DB_PASSWORD}
     url: ${DB_URL}
     schemas: public
+
+  thymeleaf:
+    cache: false
+    mode: HTML
+    prefix: classpath:/templates/
+    suffix: .html
+    encoding: UTF-8
 
   rabbitmq:
     host: ${RABBITMQ_HOST}
@@ -114,3 +125,7 @@ kafka:
       otp-verification: group-otp-verification
       password-reset: group-password-reset
       welcome-email: group-welcome-email
+
+resend:
+  api-key: ${RESEND_API_KEY}
+  from: onboarding@resend.dev

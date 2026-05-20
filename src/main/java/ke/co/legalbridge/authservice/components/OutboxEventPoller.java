@@ -1,5 +1,6 @@
 package ke.co.legalbridge.authservice.components;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ke.co.legalbridge.authservice.configuration.KafkaPropertiesConfig;
 import ke.co.legalbridge.authservice.enumerations.OutboxStatus;
 import ke.co.legalbridge.authservice.model.OutboxEvent;
@@ -27,6 +28,7 @@ public class OutboxEventPoller {
     private final OutboxEventRepository eventRepository;
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final KafkaPropertiesConfig propertiesConfig;
+    private final ObjectMapper objectMapper;
 
     @Scheduled(fixedDelay = 5000)
     @Transactional
@@ -36,11 +38,15 @@ public class OutboxEventPoller {
         List<OutboxEvent> pendingEvents = eventRepository.findByStatus(OutboxStatus.PENDING);
 
         for (OutboxEvent event : pendingEvents) {
+
             try {
+                Class<?> eventClass = Class.forName(event.getAggregateType());
+                Object eventObject = objectMapper.readValue(event.getPayload(), eventClass);
+
                 kafkaTemplate.send(
                         propertiesConfig.getTopics().get(event.getEventType()),
                         event.getAggregateId(),
-                        event.getPayload());
+                        eventObject);
                 log.info("================= Topic published: {} =================", propertiesConfig.getTopics().get(event.getEventType()));
                 event.setStatus(OutboxStatus.PUBLISHED);
                 event.setPublishedAt(LocalDateTime.now());
