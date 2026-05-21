@@ -118,6 +118,7 @@ kafka:
       email-verification: email-verification-topic
       email-verification-dlt: email-verification-topic-dlt
       otp-verification: otp-verification-topic
+      otp-verification-dlt: otp-verification-topic-dlt
       password-reset: password-reset-topic
       password-reset-dlt: password-reset-topic-dlt
       welcome-email: welcome-email-topic
@@ -126,6 +127,7 @@ kafka:
       email-verification: group-email-verification
       email-verification-dlt: group-email-verification-dlt
       otp-verification: group-otp-verification
+      otp-verification-dlt: group-otp-verification-dlt
       password-reset: group-password-reset
       password-reset-dlt: group-password-reset-dlt
       welcome-email: group-welcome-email

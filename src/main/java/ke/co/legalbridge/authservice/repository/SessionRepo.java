@@ -14,22 +14,24 @@ public interface SessionRepo extends JpaRepository<UserSession, UUID> {
 
     Optional<UserSession> findByRefreshToken(String refreshToken);
 
-    List<UserSession> findByUserIdAndIsRevokedFalse(UUID userId);
+    List<UserSession> findByUserIdAndRevokedFalse(UUID userId);
 
     List<UserSession> findByUserId(UUID userId);
 
     // Clean up expired sessions
     void deleteByExpiresAtBefore(LocalDateTime dateTime);
 
-    int deleteByExpiresAtBeforeAndIsRevokedFalse(LocalDateTime now);
+    int deleteByExpiresAtBeforeAndRevokedFalse(LocalDateTime now);
 
     int deleteByRevokedTrueAndRevokedAtBefore(LocalDateTime now);
 
     // Find session by device info for reuse
-    Optional<UserSession> findByUserIdAndDeviceInfoAndIsRevokedFalse(UUID userId, String deviceInfo);
+    Optional<UserSession> findByUserIdAndDeviceInfoAndRevokedFalse(UUID userId, String deviceInfo);
 
     // Find active sessions for a user
-    List<UserSession> findByUserIdAndIsRevokedFalseAndExpiresAtAfter(UUID userId, LocalDateTime now);
+    List<UserSession> findByUserIdAndRevokedFalseAndExpiresAtAfter(UUID userId, LocalDateTime now);
+
+    boolean existsByUserIdAndDeviceInfoAndRevokedFalseAndExpiresAtAfter(UUID userId, String deviceInfo, LocalDateTime now);
 
     // Delete all user sessions after user updates password
     void deleteByUserId(UUID userId);

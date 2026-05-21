@@ -26,5 +26,9 @@ public class ResponseDTO {
     private String sessionId;
     private long expiresIn; // seconds
 
+    private boolean mfaRequired;
+    private String mfaSessionId;
+    private String message;
+
 
 }

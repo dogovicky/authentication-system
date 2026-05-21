@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Your Login Code</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: #f0f0f0;
+            font-family: 'Inter', sans-serif;
+            color: #1a1a1a;
+            padding: 48px 16px;
+        }
+
+        .wrapper {
+            max-width: 560px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+        }
+
+        /* Header */
+        .header {
+            background: #0e0e0e;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #c8a96e, #e8c98a, #c8a96e);
+        }
+
+        .logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #c8a96e;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            font-weight: 600;
+            color: #ffffff;
+            line-height: 1.3;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            margin-top: 8px;
+            font-size: 14px;
+            color: #666;
+            font-weight: 300;
+        }
+
+        /* Body */
+        .body {
+            padding: 40px;
+        }
+
+        .body > p {
+            font-size: 15px;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .body > p strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        /* OTP Block */
+        .otp-wrap {
+            margin: 32px 0;
+            text-align: center;
+        }
+
+        .otp-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #bbb;
+            margin-bottom: 16px;
+        }
+
+        .otp-code {
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 48px;
+            font-weight: 600;
+            letter-spacing: 12px;
+            color: #1a1a1a;
+            background: #f7f7f7;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 20px 32px 20px 44px; /* offset letter-spacing on right */
+        }
+
+        /* Device info */
+        .device-info {
+            background: #fdf8f0;
+            border: 1px solid #e8d5b0;
+            border-left: 3px solid #c8a96e;
+            border-radius: 6px;
+            padding: 16px 18px;
+            margin-top: 28px;
+        }
+
+        .device-info-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #c8a96e;
+            margin-bottom: 8px;
+        }
+
+        .device-info p {
+            font-size: 13px;
+            color: #888;
+            line-height: 1.7;
+        }
+
+        .device-info p strong {
+            color: #555;
+            font-weight: 500;
+        }
+
+        /* Warning */
+        .warning {
+            margin-top: 24px;
+            background: #fff8f8;
+            border: 1px solid #ffd5d5;
+            border-left: 3px solid #e05252;
+            border-radius: 6px;
+            padding: 14px 18px;
+        }
+
+        .warning p {
+            font-size: 13px;
+            color: #999;
+            line-height: 1.7;
+        }
+
+        .warning p strong {
+            color: #e05252;
+        }
+
+        /* Footer */
+        .footer {
+            background: #fafafa;
+            border-top: 1px solid #f0f0f0;
+            padding: 24px 40px;
+            text-align: center;
+        }
+
+        .footer p {
+            font-size: 12px;
+            color: #bbb;
+            line-height: 1.7;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+
+    <div class="header">
+        <div class="logo">LegalBridge</div>
+        <h1>New device login detected.</h1>
+        <p>Verify it's you with the code below.</p>
+    </div>
+
+    <div class="body">
+        <p>Hi <strong th:text="${email}">user@example.com</strong>,<br/>
+            We noticed a login attempt from a device we don't recognize.
+            Use the code below to confirm it's you.
+        </p>
+
+        <div class="otp-wrap">
+            <div class="otp-label">Your one-time code</div>
+            <div class="otp-code" th:text="${otp}">000000</div>
+        </div>
+
+        <div class="device-info">
+            <div class="device-info-label">Login attempt details</div>
+            <p><strong>Time:</strong> <span th:text="${loginTime}">2026-01-01 00:00</span></p>
+<!--            <p><strong>IP Address:</strong> <span th:text="${ipAddress}">0.0.0.0</span></p>-->
+<!--            <p><strong>Device Info:</strong><span th:text="${deviceInfo}}">Device Info</span></p>-->
+        </div>
+
+        <div class="warning">
+            <p><strong>⚠️ Didn't attempt to log in?</strong><br/>
+                Someone may have your password. We recommend changing it immediately.
+                This code expires in <strong>10 minutes</strong>.
+            </p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>© 2026 LegalBridge · This email was sent to <span th:text="${email}">user@example.com</span><br/>
+            Never share this code with anyone, including LegalBridge support.</p>
+    </div>
+
+</div>
+</body>
+</html>
