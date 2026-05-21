@@ -1,6 +1,7 @@
 package ke.co.legalbridge.authservice.service;
 
 import jakarta.servlet.http.HttpServletRequest;
+import ke.co.legalbridge.authservice.dto.events.PasswordResetEvent;
 import ke.co.legalbridge.authservice.dto.passwordreset.PasswordResetConfirmDTO;
 import ke.co.legalbridge.authservice.dto.passwordreset.PasswordResetRequestDTO;
 import ke.co.legalbridge.authservice.dto.passwordreset.PasswordResetResponseDTO;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +38,7 @@ public class PasswordResetService {
     private final PasswordEncoder passwordEncoder;
     private final PasswordUtil passwordUtil = new PasswordUtil();
     private final SessionRepo sessionRepo;
+    private final OutboxService outboxService;
 
     @Value("${app.frontend.url:http://localhost:3000}")
     private String frontendUrl;
@@ -92,8 +95,13 @@ public class PasswordResetService {
             // Build reset link for email
             String resetLink = String.format("%s/reset-password?token=%s", frontendUrl, resetToken);
 
-            // Send email via elixir
-            sendPasswordResetEmail(user, resetLink, resetToken);
+            // Save event to
+            PasswordResetEvent resetEvent = PasswordResetEvent.builder()
+                    .eventId(UUID.randomUUID().toString())
+                    .email(user.getEmail())
+                    .resetLink(resetLink)
+                    .build();
+            outboxService.saveOutboxEvent(resetEvent);
 
             log.info("Password reset token generated for user: {} and token: {}", user.getEmail(), resetToken);
 

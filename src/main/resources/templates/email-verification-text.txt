@@ -1,0 +1,11 @@
+Hi [(${email})],
+
+Please verify your email address by clicking the link below:
+
+[(${verificationLink})]
+
+This link expires in 15 minutes.
+
+If you didn't create an account, ignore this email.
+
+— LegalBridge

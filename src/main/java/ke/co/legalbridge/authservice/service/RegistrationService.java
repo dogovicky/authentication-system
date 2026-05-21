@@ -2,16 +2,23 @@ package ke.co.legalbridge.authservice.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import ke.co.legalbridge.authservice.dto.ResponseDTO;
+import ke.co.legalbridge.authservice.dto.emailvalidation.EmailVerificationResponseDTO;
 import ke.co.legalbridge.authservice.dto.events.EmailVerificationEvent;
 import ke.co.legalbridge.authservice.dto.registration.SignUpRequestDTO;
 import ke.co.legalbridge.authservice.enumerations.ErrorCode;
+import ke.co.legalbridge.authservice.exception.AuthSecurityException;
 import ke.co.legalbridge.authservice.exception.BusinessException;
 import ke.co.legalbridge.authservice.exception.TechnicalException;
 import ke.co.legalbridge.authservice.mappers.AuthMapper;
+import ke.co.legalbridge.authservice.model.EmailVerificationToken;
 import ke.co.legalbridge.authservice.model.Role;
 import ke.co.legalbridge.authservice.model.User;
+import ke.co.legalbridge.authservice.model.UserSession;
+import ke.co.legalbridge.authservice.repository.EmailVerificationTokenRepo;
 import ke.co.legalbridge.authservice.repository.RoleRepository;
+import ke.co.legalbridge.authservice.repository.SessionRepo;
 import ke.co.legalbridge.authservice.repository.UserRepo;
+import ke.co.legalbridge.authservice.security.JwtService;
 import ke.co.legalbridge.authservice.utilities.EmailVerificationUtil;
 import ke.co.legalbridge.authservice.utilities.PasswordUtil;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +44,9 @@ public class RegistrationService {
     private final RoleRepository roleRepository;
     private final EmailVerificationUtil emailVerificationUtil;
     private final OutboxService outboxService;
+    private final EmailVerificationTokenRepo verificationTokenRepo;
+    private final JwtService jwtService;
+    private final SessionRepo sessionRepo;
 
 
     @Transactional
@@ -85,7 +95,60 @@ public class RegistrationService {
         }
     }
 
-    public void verifyEmail() {
+    public EmailVerificationResponseDTO verifyEmail(String token, HttpServletRequest request) {
+
+        // Verify token is valid, exists and hasn't expired in the db
+        EmailVerificationToken verificationToken = verificationTokenRepo.findByToken(token)
+                .orElseThrow(() -> AuthSecurityException.invalidToken("auth-service"));
+
+        // If token exists, check validity
+        if (!verificationToken.isValid()) {
+            log.warn("Invalid verification token.");
+            throw new BusinessException(ErrorCode.INVALID_TOKEN, "Verification link expired. Please request another link.");
+        }
+
+        // Get User
+        User user = userRepo.findById(verificationToken.getUserId())
+                .orElseThrow(() -> BusinessException.userNotFound(verificationToken.getUserId().toString(), "auth-service"));
+
+        // Validate account
+        user.setActive(true);
+        user.setVerified(true);
+
+        // Clear token from the database after being used.
+        verificationTokenRepo.deleteByUserId(user.getId());
+
+        // Generate tokens for auto-login after verification
+        String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
+
+        // Create and track session
+        UserSession userSession = UserSession.builder()
+                .userId(user.getId())
+                .refreshToken(refreshToken)
+                .issuedAt(LocalDateTime.now())
+                .expiresAt(LocalDateTime.now().plusDays(7))
+                .ipAddress(extractIpAddress(request))
+                .deviceInfo(extractDeviceInfo(request))
+                .build();
+
+        sessionRepo.save(userSession);
+
+        user.setLastLoginAt(LocalDateTime.now()); // Mark first login
+        userRepo.save(user);
+
+        log.info("Account verified successfully: {}", user.getEmail());
+
+        return EmailVerificationResponseDTO.builder()
+                .success(true)
+                .message("Account successfully verified.")
+                .email(user.getEmail())
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .tokenType("Bearer")
+                .expiresIn(jwtService.getAccessTokenExpirationInSeconds())
+                .sessionId(userSession.getId().toString())
+                .build();
 
     }
 

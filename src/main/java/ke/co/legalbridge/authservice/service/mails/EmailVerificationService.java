@@ -1,6 +1,7 @@
-package ke.co.legalbridge.authservice.service;
+package ke.co.legalbridge.authservice.service.mails;
 
 import ke.co.legalbridge.authservice.dto.events.EmailVerificationEvent;
+import ke.co.legalbridge.authservice.service.MailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -29,7 +30,7 @@ public class EmailVerificationService {
         );
     }
 
-    @KafkaListener(topics = "kafka.topics.email-verification-dlt", groupId = "kafka.groups.email-verification-dlt")
+    @KafkaListener(topics = "${kafka.topics.email-verification-dlt}", groupId = "${kafka.groups.email-verification-dlt}")
     public void handleDlt(ConsumerRecord<String, Object> record) {
         log.error("DLT | topic: {} | offset: {} | partition: {} | payload: {}",
                 record.topic(), record.offset(), record.partition(), record.value());
