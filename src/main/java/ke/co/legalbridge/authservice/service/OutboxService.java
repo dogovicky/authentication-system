@@ -33,7 +33,6 @@ public class OutboxService {
                     .aggregateType(event.getClass().getName())
                     .eventType(event.getEventType())
                     .payload(objectMapper.writeValueAsString(event)) // Serialize event
-                    .topic(event.getEventType())
                     .status(OutboxStatus.PENDING)
                     .createdAt(LocalDateTime.now())
                     .build();

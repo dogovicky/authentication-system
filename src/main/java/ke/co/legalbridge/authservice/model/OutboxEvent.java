@@ -34,11 +34,13 @@ public class OutboxEvent {
     @JdbcTypeCode(SqlTypes.JSON)
     private String payload;
 
-    private String topic;
-
     @Enumerated(EnumType.STRING)
     private OutboxStatus status;
 
+    @Builder.Default
+    private int attempts = 0;
+
+    private String lastError;
     private LocalDateTime createdAt;
     private LocalDateTime publishedAt;
 

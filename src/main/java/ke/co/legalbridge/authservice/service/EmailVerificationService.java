@@ -29,8 +29,11 @@ public class EmailVerificationService {
         );
     }
 
+    @KafkaListener(topics = "kafka.topics.email-verification-dlt", groupId = "kafka.groups.email-verification-dlt")
     public void handleDlt(ConsumerRecord<String, Object> record) {
         log.error("DLT | topic: {} | offset: {} | partition: {} | payload: {}",
                 record.topic(), record.offset(), record.partition(), record.value());
+
+        // TODO: Alert administrators
     }
 }
