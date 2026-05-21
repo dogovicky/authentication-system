@@ -1,11 +1,16 @@
 package ke.co.legalbridge.authservice.service;
 
 import jakarta.servlet.http.HttpServletRequest;
+import ke.co.legalbridge.authservice.dto.events.OtpVerificationEvent;
 import ke.co.legalbridge.authservice.dto.login.LoginRequestDTO;
 import ke.co.legalbridge.authservice.dto.ResponseDTO;
+import ke.co.legalbridge.authservice.dto.mfa.MfaVerifyRequestDTO;
+import ke.co.legalbridge.authservice.enumerations.MfaStatus;
 import ke.co.legalbridge.authservice.exception.AuthSecurityException;
+import ke.co.legalbridge.authservice.model.MfaToken;
 import ke.co.legalbridge.authservice.model.User;
 import ke.co.legalbridge.authservice.model.UserSession;
+import ke.co.legalbridge.authservice.repository.MfaTokenRepository;
 import ke.co.legalbridge.authservice.repository.SessionRepo;
 import ke.co.legalbridge.authservice.repository.UserRepo;
 import ke.co.legalbridge.authservice.security.JwtService;
@@ -13,8 +18,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -25,15 +33,15 @@ public class LoginService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final SessionRepo sessionRepo;
+    private final MfaTokenRepository tokenRepository;
+    private final OutboxService outboxService;
 
-    public ResponseDTO login(LoginRequestDTO loginRequestDTO, HttpServletRequest request) {
-        log.info("============== Attempting login with email: [{}] ================", loginRequestDTO.getEmail());
-
+    @Transactional
+    public ResponseDTO login(LoginRequestDTO loginRequestDTO, HttpServletRequest servletRequest) {
         // Find User
         User user = userRepo.findByEmail(loginRequestDTO.getEmail())
                 .orElseThrow(() -> AuthSecurityException.invalidCredentials("auth-service"));
 
-        // Check account status
         validateAccountStatus(user);
 
         // Verify password matches
@@ -42,56 +50,104 @@ public class LoginService {
             throw AuthSecurityException.invalidCredentials("auth-service");
         }
 
-        // Extract Device Info and IPAddress
-        String deviceInfo = extractDeviceInfo(request);
-        String ipAddress = extractIpAddress(request);
+        String deviceInfo = extractDeviceInfo(servletRequest);
+        String ipAddress = extractIpAddress(servletRequest);
 
-        //Check if session already exists for this device
-        // TODO: Duplicate device info constraint causes exceptions
-        UserSession session = sessionRepo.findByUserIdAndDeviceInfoAndIsRevokedFalse(user.getId(), deviceInfo)
-                .orElse(null);
-
-        // Generate tokens
-        String accessToken = jwtService.generateAccessToken(user);
-        String refreshToken;
-
-        if (session != null && session.getExpiresAt().isAfter(LocalDateTime.now())) {
-            // Reuse existing session - just update it
-            session.setLastUsedAt(LocalDateTime.now());
-            session.setIpAddress(ipAddress);
-            refreshToken = session.getRefreshToken();
-
-            log.info("================= Reusing existing session for user: {} on device: {} ==================",
-                    user.getEmail(), deviceInfo);
-        } else {
-            // Create a new session only if no valid one exists
-            refreshToken = jwtService.generateRefreshToken(user);
-
-            // Create and Track Session
-            session = UserSession.builder()
-                    .userId(user.getId())
-                    .refreshToken(refreshToken)
-                    .deviceInfo(extractDeviceInfo(request))
-                    .ipAddress(extractIpAddress(request))
-                    .issuedAt(LocalDateTime.now())
-                    .expiresAt(LocalDateTime.now().plusDays(7))
-                    .lastUsedAt(LocalDateTime.now())
-                    .build();
-
-            log.info("================== Created new session for user: {} on device: {} ====================",
-                    user.getEmail(), deviceInfo);
-        }
-
-        sessionRepo.save(session);
-
-        // Reset failed attempts on successful login
+        // Reset Failed attempts
         user.setFailedLoginAttempts(0);
         user.setLastLoginAt(LocalDateTime.now());
         userRepo.save(user);
 
-        log.info("================== User logged in: {} from IP: {} ===================", user.getEmail(), session.getIpAddress());
+        // Known device check
+        boolean knownDevice = sessionRepo
+                .existsByUserIdAndDeviceInfoAndRevokedFalseAndExpiresAtAfter(user.getId(), deviceInfo, LocalDateTime.now());
 
-        // Build response
+        if (!knownDevice) {
+            // Trigger MFA
+            return triggerMfa(user, deviceInfo, ipAddress);
+        }
+
+        // Known device
+        return issueTokens(user, deviceInfo, ipAddress);
+    }
+
+    // Trigger MFA via email and OTP
+    private ResponseDTO triggerMfa(User user, String deviceInfo, String ipAddress) {
+        String otp = generateOtp();
+
+        MfaToken token = MfaToken.builder()
+                .otp(otp)
+                .MfaStatus(MfaStatus.PENDING)
+                .ipAddress(ipAddress)
+                .deviceInfo(deviceInfo)
+                .userId(user.getId())
+                .createdAt(LocalDateTime.now())
+                .expiresAt(LocalDateTime.now().plusMinutes(10))
+                .build();
+        tokenRepository.save(token);
+
+        // Fire OTP event via Kafka outbox
+        OtpVerificationEvent event = OtpVerificationEvent.builder()
+                .eventId(UUID.randomUUID().toString())
+                .otp(otp)
+                .email(user.getEmail())
+                .build();
+
+        outboxService.saveOutboxEvent(event);
+
+        return ResponseDTO.builder()
+                .mfaRequired(true)
+                .mfaSessionId(token.getId().toString())
+                .message("New device detected. Enter the OTP sent to your email.")
+                .build();
+    }
+
+    // Verify OTP
+    public ResponseDTO verifyMfa(MfaVerifyRequestDTO requestDTO, HttpServletRequest request) {
+        // Find the token with session id
+        MfaToken token = tokenRepository.findById(UUID.fromString(requestDTO.mfaSessionId()))
+                .orElseThrow(() -> AuthSecurityException.invalidToken("auth-service"));
+
+        // Validate
+        if (token.getMfaStatus() != MfaStatus.PENDING) {
+            throw AuthSecurityException.invalidToken("auth-service");
+        }
+
+        if (token.getExpiresAt().isBefore(LocalDateTime.now())) {
+            token.setMfaStatus(MfaStatus.EXPIRED);
+            tokenRepository.save(token);
+            throw AuthSecurityException.tokenExpired("auth-service");
+        }
+
+        if (!token.getOtp().equals(requestDTO.otp())) {
+            throw AuthSecurityException.invalidToken("auth-service");
+        }
+
+        // Mark verified
+        token.setMfaStatus(MfaStatus.VERIFIED);
+        tokenRepository.save(token);
+
+        User user = userRepo.findById(token.getUserId())
+                .orElseThrow(() -> AuthSecurityException.invalidCredentials("auth-service"));
+
+        return issueTokens(user, token.getDeviceInfo(), token.getIpAddress());
+    }
+
+    private ResponseDTO issueTokens(User user, String deviceInfo, String ipAddress) {
+        String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
+
+        UserSession session = UserSession.builder()
+                .userId(user.getId())
+                .refreshToken(refreshToken)
+                .deviceInfo(deviceInfo)
+                .ipAddress(ipAddress)
+                .issuedAt(LocalDateTime.now())
+                .expiresAt(LocalDateTime.now().plusDays(7))
+                .lastUsedAt(LocalDateTime.now())
+                .build();
+
+        sessionRepo.save(session);
         return ResponseDTO.builder()
                 .email(user.getEmail())
                 .userId(user.getId().toString())
@@ -105,7 +161,6 @@ public class LoginService {
                 .build();
 
     }
-
 
     private static void validateAccountStatus(User user) {
         // Check if account is locked
@@ -149,6 +204,10 @@ public class LoginService {
             return xForwardedFor.split(",")[0].trim();
         }
         return request.getRemoteAddr();
+    }
+
+    private String generateOtp() {
+        return String.valueOf(100000 + new SecureRandom().nextInt(900000)); // 6 digit otp
     }
 
 }

@@ -114,7 +114,7 @@ public class SessionService {
             throw AuthSecurityException.unauthorized("auth-service");
         }
 
-        List<UserSession> sessions = sessionRepo.findByUserIdAndIsRevokedFalse(UUID.fromString(userId));
+        List<UserSession> sessions = sessionRepo.findByUserIdAndRevokedFalse(UUID.fromString(userId));
         sessions.forEach(session -> {
             session.setRevoked(true);
             session.setRevokedAt(LocalDateTime.now());
@@ -133,7 +133,7 @@ public class SessionService {
         }
 
         List<UserSession> sessions = sessionRepo
-                .findByUserIdAndIsRevokedFalseAndExpiresAtAfter(UUID.fromString(userId), LocalDateTime.now());
+                .findByUserIdAndRevokedFalseAndExpiresAtAfter(UUID.fromString(userId), LocalDateTime.now());
 
         if (sessions.isEmpty()) {
             return new ArrayList<>();

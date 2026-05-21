@@ -35,7 +35,7 @@ public class TokenCleanupScheduler {
         try {
             LocalDateTime cutoffDate = LocalDateTime.now().minusDays(expiredSessionsRetentionDays);
 
-            int deleteCount = sessionRepo.deleteByExpiresAtBeforeAndIsRevokedFalse(cutoffDate);
+            int deleteCount = sessionRepo.deleteByExpiresAtBeforeAndRevokedFalse(cutoffDate);
 
             log.info("Expired Sessions cleanup complete. Deleted {} sessions that expired before {}", deleteCount, cutoffDate);
         } catch (Exception ex) {
