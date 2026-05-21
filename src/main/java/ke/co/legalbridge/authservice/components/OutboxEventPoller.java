@@ -1,61 +1,39 @@
 package ke.co.legalbridge.authservice.components;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import ke.co.legalbridge.authservice.configuration.KafkaPropertiesConfig;
-import ke.co.legalbridge.authservice.enumerations.OutboxStatus;
 import ke.co.legalbridge.authservice.model.OutboxEvent;
 import ke.co.legalbridge.authservice.repository.OutboxEventRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class OutboxEventPoller {
-    /*
-     * This event poller will act as the kafka producer
-     * Publishing events based on topic saved in the OutboxEvent
-     *
-     */
 
     private final OutboxEventRepository eventRepository;
-    private final KafkaTemplate<String, Object> kafkaTemplate;
-    private final KafkaPropertiesConfig propertiesConfig;
-    private final ObjectMapper objectMapper;
+    private final OutboxEventPublisher eventPublisher;
 
     @Scheduled(fixedDelay = 5000)
-    @Transactional
-    public void pollAndPublish() {
+    public void pollPending() {
+        log.info("================= Polling pending events ================");
+        List<OutboxEvent> pendingEvents = eventRepository.findPendingByAscOrder();
+        pendingEvents.forEach(eventPublisher::publish);
+    }
 
-        log.info("================= Polling for events ================");
-        List<OutboxEvent> pendingEvents = eventRepository.findByStatus(OutboxStatus.PENDING);
-
-        for (OutboxEvent event : pendingEvents) {
-
-            try {
-                Class<?> eventClass = Class.forName(event.getAggregateType());
-                Object eventObject = objectMapper.readValue(event.getPayload(), eventClass);
-
-                kafkaTemplate.send(
-                        propertiesConfig.getTopics().get(event.getEventType()),
-                        event.getAggregateId(),
-                        eventObject);
-                log.info("================= Topic published: {} =================", propertiesConfig.getTopics().get(event.getEventType()));
-                event.setStatus(OutboxStatus.PUBLISHED);
-                event.setPublishedAt(LocalDateTime.now());
-                log.info("===================== Event Published: {} ===================", event.getAggregateId());
-            }  catch (Exception ex) {
-                event.setStatus(OutboxStatus.FAILED);
-                log.info("================= Failed to Publish Event: {} ===============", ex.getMessage());
-            }
+    @Scheduled(fixedDelay = 60000) // Every 60 seconds
+    public void pollFailed() {
+        log.info("================= Polling failed events ====================");
+        List<OutboxEvent> failedEvents = eventRepository.findRetryable();
+        if (!failedEvents.isEmpty()) {
+            log.warn("!!!!!! Retrying {} failed outbox events !!!!!!", failedEvents.size());
+            failedEvents.forEach(eventPublisher::publish);
         }
     }
+
+
 
 }

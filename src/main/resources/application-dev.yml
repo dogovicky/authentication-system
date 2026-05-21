@@ -116,12 +116,14 @@ logging:
 kafka:
     topics:
       email-verification: email-verification-topic
+      email-verification-dlt: email-verification-topic-dlt
       otp-verification: otp-verification-topic
       password-reset: password-reset-topic
       welcome-email: welcome-email-topic
 
     groups:
       email-verification: group-email-verification
+      email-verification-dlt: group-email-verification-dlt
       otp-verification: group-otp-verification
       password-reset: group-password-reset
       welcome-email: group-welcome-email
