@@ -40,7 +40,9 @@ public class OutboxEvent {
     @Builder.Default
     private int attempts = 0;
 
+    @Column(name = "last_error", columnDefinition = "TEXT")
     private String lastError;
+
     private LocalDateTime createdAt;
     private LocalDateTime publishedAt;
 
