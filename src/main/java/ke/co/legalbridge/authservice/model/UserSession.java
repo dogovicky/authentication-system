@@ -29,7 +29,7 @@ public class UserSession {
     @Column(nullable = false, unique = true, length = 500)
     private String refreshToken;
 
-    @Column(length = 500)
+    @Column(length = 500, columnDefinition = "TEXT")
     private String deviceInfo;
 
     @Column(length = 45)
@@ -42,8 +42,8 @@ public class UserSession {
     private LocalDateTime expiresAt;
 
     @Builder.Default
-    @Column(nullable = false)
-    private boolean isRevoked = false; // For manual logout
+    @Column(nullable = false, name = "is_revoked")
+    private boolean revoked = false; // For manual logout
 
     private LocalDateTime revokedAt;
 

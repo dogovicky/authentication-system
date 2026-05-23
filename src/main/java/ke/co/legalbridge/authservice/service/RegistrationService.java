@@ -95,6 +95,7 @@ public class RegistrationService {
         }
     }
 
+    @Transactional
     public EmailVerificationResponseDTO verifyEmail(String token, HttpServletRequest request) {
 
         // Verify token is valid, exists and hasn't expired in the db
