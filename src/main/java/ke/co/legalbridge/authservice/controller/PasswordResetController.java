@@ -7,7 +7,7 @@ import ke.co.legalbridge.authservice.dto.passwordreset.PasswordResetConfirmDTO;
 import ke.co.legalbridge.authservice.dto.passwordreset.PasswordResetRequestDTO;
 import ke.co.legalbridge.authservice.dto.passwordreset.PasswordResetResponseDTO;
 import ke.co.legalbridge.authservice.dto.passwordreset.PasswordResetValidateDTO;
-import ke.co.legalbridge.authservice.service.PasswordResetService;
+import ke.co.legalbridge.authservice.services.PasswordResetService;
 import ke.co.legalbridge.authservice.apiresponse.ApiResponse;
 import ke.co.legalbridge.authservice.apiresponse.ResponseEntityBuilder;
 import lombok.RequiredArgsConstructor;

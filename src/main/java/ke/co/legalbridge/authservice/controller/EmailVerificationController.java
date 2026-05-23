@@ -7,7 +7,7 @@ import ke.co.legalbridge.authservice.dto.emailvalidation.EmailVerificationConfir
 import ke.co.legalbridge.authservice.dto.emailvalidation.EmailVerificationResponseDTO;
 import ke.co.legalbridge.authservice.apiresponse.ApiResponse;
 import ke.co.legalbridge.authservice.apiresponse.ResponseEntityBuilder;
-import ke.co.legalbridge.authservice.service.RegistrationService;
+import ke.co.legalbridge.authservice.services.RegistrationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

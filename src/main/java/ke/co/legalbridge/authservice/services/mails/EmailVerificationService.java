@@ -1,7 +1,7 @@
-package ke.co.legalbridge.authservice.service.mails;
+package ke.co.legalbridge.authservice.services.mails;
 
 import ke.co.legalbridge.authservice.dto.events.EmailVerificationEvent;
-import ke.co.legalbridge.authservice.service.MailService;
+import ke.co.legalbridge.authservice.services.MailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

@@ -7,7 +7,7 @@ import ke.co.legalbridge.authservice.apiresponse.ApiResponse;
 import ke.co.legalbridge.authservice.apiresponse.ResponseEntityBuilder;
 import ke.co.legalbridge.authservice.dto.ResponseDTO;
 import ke.co.legalbridge.authservice.dto.mfa.MfaVerifyRequestDTO;
-import ke.co.legalbridge.authservice.service.LoginService;
+import ke.co.legalbridge.authservice.services.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

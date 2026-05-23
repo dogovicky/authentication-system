@@ -1,7 +1,7 @@
 package ke.co.legalbridge.authservice.listeners;
 
 import ke.co.legalbridge.authservice.dto.events.AccountDeactivatedEvent;
-import ke.co.legalbridge.authservice.service.RabbitMQPublisher;
+import ke.co.legalbridge.authservice.services.RabbitMQPublisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;

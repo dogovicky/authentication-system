@@ -1,6 +1,9 @@
 package ke.co.legalbridge.authservice.model;
 
 import jakarta.persistence.*;
+import ke.co.legalbridge.authservice.enumerations.OAuth2Provider;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +15,8 @@ import java.util.UUID;
 @Table(name = "users")
 @Data
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class User {
 
     @Id
@@ -31,11 +36,19 @@ public class User {
     )
     private Set<Role> roles;
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean isVerified = false;
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean isActive = false;
+
+    //OAuth 2
+    private String providerId;
+
+    @Enumerated(EnumType.STRING)
+    private OAuth2Provider provider;
 
 
     private LocalDateTime lastLoginAt;

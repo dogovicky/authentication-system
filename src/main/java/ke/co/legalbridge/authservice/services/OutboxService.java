@@ -1,8 +1,7 @@
-package ke.co.legalbridge.authservice.service;
+package ke.co.legalbridge.authservice.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.protobuf.util.JsonFormat;
 import ke.co.legalbridge.authservice.dto.events.KafkaEvent;
 import ke.co.legalbridge.authservice.enumerations.ErrorCode;
 import ke.co.legalbridge.authservice.enumerations.OutboxStatus;

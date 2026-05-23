@@ -3,7 +3,7 @@ package ke.co.legalbridge.authservice.controller;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import ke.co.legalbridge.authservice.dto.DeleteAccountRequestDTO;
-import ke.co.legalbridge.authservice.service.DeleteAccountService;
+import ke.co.legalbridge.authservice.services.DeleteAccountService;
 import ke.co.legalbridge.authservice.apiresponse.ApiResponse;
 import ke.co.legalbridge.authservice.apiresponse.ResponseEntityBuilder;
 import lombok.RequiredArgsConstructor;
