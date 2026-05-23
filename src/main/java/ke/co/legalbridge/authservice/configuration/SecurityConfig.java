@@ -2,6 +2,9 @@ package ke.co.legalbridge.authservice.configuration;
 
 import ke.co.legalbridge.authservice.security.JwtFilter;
 import ke.co.legalbridge.authservice.security.MyUserDetailsService;
+import ke.co.legalbridge.authservice.services.CustomOAuth2UserService;
+import ke.co.legalbridge.authservice.services.OAuth2AuthenticationFailureHandler;
+import ke.co.legalbridge.authservice.services.OAuth2AuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +33,9 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 public class SecurityConfig {
 
     private final MyUserDetailsService myUserDetailsService;
+    private final CustomOAuth2UserService oAuth2UserService;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
     private final JwtFilter jwtFilter;
 
     @Bean
@@ -41,6 +47,11 @@ public class SecurityConfig {
                     request.requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/actuator/**").permitAll()
                             .anyRequest().authenticated();
                 })
+                .oauth2Login(oAuth2 -> oAuth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(oAuth2UserService))
+                        .successHandler(oAuth2AuthenticationSuccessHandler)
+                        .failureHandler(oAuth2AuthenticationFailureHandler))
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session -> {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -53,7 +64,7 @@ public class SecurityConfig {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.addAllowedOrigin("http://localhost:5173");
+        corsConfiguration.addAllowedOrigin("http://localhost:3000");
         corsConfiguration.addAllowedOrigin(" https://5bcb-41-89-195-3.ngrok-free.app");
         corsConfiguration.addAllowedHeader("*");
         corsConfiguration.addAllowedMethod("*");

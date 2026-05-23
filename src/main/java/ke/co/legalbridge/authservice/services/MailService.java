@@ -1,4 +1,4 @@
-package ke.co.legalbridge.authservice.service;
+package ke.co.legalbridge.authservice.services;
 
 import com.resend.Resend;
 import com.resend.core.exception.ResendException;

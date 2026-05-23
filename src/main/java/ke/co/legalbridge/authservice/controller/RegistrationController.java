@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import ke.co.legalbridge.authservice.dto.ResponseDTO;
 import ke.co.legalbridge.authservice.dto.registration.SignUpRequestDTO;
-import ke.co.legalbridge.authservice.service.RegistrationService;
+import ke.co.legalbridge.authservice.services.RegistrationService;
 import ke.co.legalbridge.authservice.apiresponse.ApiResponse;
 import ke.co.legalbridge.authservice.apiresponse.ResponseEntityBuilder;
 import lombok.RequiredArgsConstructor;

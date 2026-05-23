@@ -1,4 +1,4 @@
-package ke.co.legalbridge.authservice.service;
+package ke.co.legalbridge.authservice.services;
 
 import jakarta.servlet.http.HttpServletRequest;
 import ke.co.legalbridge.authservice.dto.events.OtpVerificationEvent;

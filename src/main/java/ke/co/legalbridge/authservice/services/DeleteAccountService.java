@@ -1,4 +1,4 @@
-package ke.co.legalbridge.authservice.service;
+package ke.co.legalbridge.authservice.services;
 
 import ke.co.legalbridge.authservice.dto.DeleteAccountRequestDTO;
 import ke.co.legalbridge.authservice.dto.events.AccountDeactivatedEvent;

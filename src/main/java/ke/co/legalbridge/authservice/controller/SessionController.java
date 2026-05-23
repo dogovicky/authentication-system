@@ -6,7 +6,7 @@ import ke.co.legalbridge.authservice.dto.session.LogoutRequestDTO;
 import ke.co.legalbridge.authservice.dto.session.RefreshTokenRequestDTO;
 import ke.co.legalbridge.authservice.dto.session.RefreshTokenResponseDTO;
 import ke.co.legalbridge.authservice.dto.session.UserSessionDTO;
-import ke.co.legalbridge.authservice.service.SessionService;
+import ke.co.legalbridge.authservice.services.SessionService;
 import ke.co.legalbridge.authservice.apiresponse.ApiResponse;
 import ke.co.legalbridge.authservice.apiresponse.ResponseEntityBuilder;
 import lombok.RequiredArgsConstructor;

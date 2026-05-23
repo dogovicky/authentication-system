@@ -1,4 +1,4 @@
-package ke.co.legalbridge.authservice.service;
+package ke.co.legalbridge.authservice.services;
 
 import ke.co.legalbridge.authservice.components.RabbitMQProperties;
 
@@ -6,12 +6,8 @@ import ke.co.legalbridge.authservice.exception.TechnicalException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
-
-import java.util.UUID;
 
 @Slf4j
 @Service

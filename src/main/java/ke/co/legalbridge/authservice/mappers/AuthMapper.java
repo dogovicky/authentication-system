@@ -19,8 +19,8 @@ public interface AuthMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "passwordHash", ignore = true)
-    @Mapping(target = "verified", constant = "false")
-    @Mapping(target = "active", constant = "true")
+    @Mapping(target = "isVerified", constant = "false")
+    @Mapping(target = "isActive", constant = "true")
     @Mapping(target = "failedLoginAttempts", constant = "0")
     @Mapping(target = "lastLoginAt", ignore = true)
     @Mapping(target = "lockedAt", ignore = true)
