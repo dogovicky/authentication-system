@@ -1,5 +1,5 @@
 -- User Session Management Table
-CREATE TABLE user_sessions (
+CREATE TABLE IF NOT EXISTS user_sessions (
     id UUID PRIMARY KEY,
     user_id UUID NOT NULL,
     refresh_token VARCHAR(500) UNIQUE NOT NULL,
