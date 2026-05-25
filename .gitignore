@@ -1,9 +1,12 @@
 HELP.md
-local.env
+
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+
+local.env
+docker.env
 
 ### STS ###
 .apt_generated

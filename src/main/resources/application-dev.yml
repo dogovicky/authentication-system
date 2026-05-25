@@ -67,32 +67,6 @@ spring:
     suffix: .html
     encoding: UTF-8
 
-  rabbitmq:
-    host: ${RABBITMQ_HOST}
-    port: ${RABBITMQ_PORT}
-    username: ${RABBITMQ_USER}
-    password: ${RABBITMQ_PASSWORD}
-
-    exchanges:
-      emailVerification: x.email.verification
-#      emailSignup: x.signup
-#      emailPasswordReset: x.password-reset
-#      profileUpdate: x.update-profile
-#      accountDeactivation: x.account-deactivation
-    queues:
-      emailVerification: q.users.email
-#      emailSignup: q.email.signup
-#      emailPasswordReset: q.password.reset
-#      profileUpdate: q.update.profile
-#      accountDeactivation: q.account.deactivate
-    routing-keys:
-      emailVerification: EmailVerificationEvent
-#      emailSignup: SendEmailVerificationLinkEvent
-#      emailPasswordReset: user.password.reset
-#      profileUpdate: user.profile.update
-#      accountDeactivation: user.account.deactivate
-
-
 management:
   endpoints:
     web:
