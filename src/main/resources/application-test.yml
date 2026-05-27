@@ -1,8 +1,8 @@
 spring:
   data:
-     redis:
-       host: ${SPRING_DATA_REDIS_HOST}
-       port: ${SPRING_DATA_REDIS_PORT}
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST}
+      port: ${SPRING_DATA_REDIS_PORT}
   security:
     oauth2:
       client:
@@ -105,23 +105,23 @@ logging:
             bind: trace
 
 kafka:
-    topics:
-      email-verification: email-verification-topic
-      email-verification-dlt: email-verification-topic-dlt
-      otp-verification: otp-verification-topic
-      otp-verification-dlt: otp-verification-topic-dlt
-      password-reset: password-reset-topic
-      password-reset-dlt: password-reset-topic-dlt
-      welcome-email: welcome-email-topic
+  topics:
+    email-verification: email-verification-topic
+    email-verification-dlt: email-verification-topic-dlt
+    otp-verification: otp-verification-topic
+    otp-verification-dlt: otp-verification-topic-dlt
+    password-reset: password-reset-topic
+    password-reset-dlt: password-reset-topic-dlt
+    welcome-email: welcome-email-topic
 
-    groups:
-      email-verification: group-email-verification
-      email-verification-dlt: group-email-verification-dlt
-      otp-verification: group-otp-verification
-      otp-verification-dlt: group-otp-verification-dlt
-      password-reset: group-password-reset
-      password-reset-dlt: group-password-reset-dlt
-      welcome-email: group-welcome-email
+  groups:
+    email-verification: group-email-verification
+    email-verification-dlt: group-email-verification-dlt
+    otp-verification: group-otp-verification
+    otp-verification-dlt: group-otp-verification-dlt
+    password-reset: group-password-reset
+    password-reset-dlt: group-password-reset-dlt
+    welcome-email: group-welcome-email
 
 resend:
   api-key: ${RESEND_API_KEY}
