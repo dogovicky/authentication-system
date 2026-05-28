@@ -5,24 +5,31 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 
-@TestConfiguration
+//@TestConfiguration
+@Testcontainers
 public class TestContainersConfig {
 
     @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
-            DockerImageName.parse("postgres-16-alpine").asCompatibleSubstituteFor("postgres"))
+    static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
+            DockerImageName.parse("postgres:16-alpine").asCompatibleSubstituteFor("postgres"))
             .withDatabaseName("auth_test_db")
             .withUsername("test")
             .withPassword("test");
 
 
     @Container
-    static KafkaContainer kafka = new KafkaContainer(
-            DockerImageName.parse("confluentinc/cp-kafka:7.4.0").asCompatibleSubstituteFor("apache/kafka")
+    static final KafkaContainer kafka = new KafkaContainer(
+            DockerImageName.parse("apache/kafka:3.7.0").asCompatibleSubstituteFor("confluentinc/cp-kafka:7.4.0")
     );
+
+    static {
+        postgres.start();
+        kafka.start();
+    }
 
     @DynamicPropertySource
     static void overrideProperties(DynamicPropertyRegistry registry) {
