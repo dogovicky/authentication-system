@@ -8,7 +8,7 @@ target/
 .env.dev
 docker.env
 .env.test
-
+docker.env.test
 ### STS ###
 .apt_generated
 .classpath
