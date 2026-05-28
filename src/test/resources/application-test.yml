@@ -131,3 +131,6 @@ resend:
 app:
   oauth2:
     redirect-uri: ${FRONT_END_URL}/oauth2/callback
+
+  jwt:
+    secret: ${JWT_SECRET}

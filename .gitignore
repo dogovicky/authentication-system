@@ -5,8 +5,9 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-local.env
+.env.dev
 docker.env
+.env.test
 
 ### STS ###
 .apt_generated
