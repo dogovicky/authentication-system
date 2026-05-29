@@ -62,7 +62,7 @@ jobs:
           SPRING_FLYWAY_URL: jdbc:postgresql://localhost:5432/auth_test_db
           SPRING_FLYWAY_USER: test
           SPRING_FLYWAY_PASSWORD: test
-          JWT_SECRET: ${[ secrets.JWT_SECRET ]}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
           JWT_ISSUER: auth-service
           JWT_ACCESS_TOKEN_EXPIRATION: 3600000
           JWT_REFRESH_TOKEN_EXPIRATION: 604800000
