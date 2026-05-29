@@ -1,8 +1,8 @@
 spring:
   data:
-    redis:
-      host: ${SPRING_DATA_REDIS_HOST}
-      port: ${SPRING_DATA_REDIS_PORT}
+     redis:
+       host: ${SPRING_DATA_REDIS_HOST}
+       port: ${SPRING_DATA_REDIS_PORT}
   security:
     oauth2:
       client:

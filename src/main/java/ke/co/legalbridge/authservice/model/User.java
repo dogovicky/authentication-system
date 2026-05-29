@@ -52,6 +52,7 @@ public class User {
 
 
     private LocalDateTime lastLoginAt;
+    @Builder.Default
     private int failedLoginAttempts = 0;
     private LocalDateTime lockedAt;
 

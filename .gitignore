@@ -5,9 +5,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-local.env
+.env.dev
 docker.env
-
+.env.test
+docker.env.test
 ### STS ###
 .apt_generated
 .classpath
