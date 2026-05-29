@@ -1,0 +1,83 @@
+spring:
+  kafka:
+    consumer:
+      auto-offset-reset: earliest
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "*"
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope: email, profile
+
+          github:
+            client-id: ${GITHUB_CLIENT_ID}
+            client-secret: ${GITHUB_CLIENT_SECRET}
+            scope: user:email, read:user
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+logging:
+  level:
+    web: debug
+    root: info
+
+    org:
+      springframework:
+        security:
+          config:
+            annotation:
+              authentication:
+                configuration:
+                  InitializeUserDetailsBeanManagerConfigurer: ERROR
+      hibernate:
+        SQL: DEBUG
+
+
+        orm:
+          jdbc:
+            bind: trace
+
+kafka:
+  topics:
+    email-verification: email-verification-topic
+    email-verification-dlt: email-verification-topic-dlt
+    otp-verification: otp-verification-topic
+    otp-verification-dlt: otp-verification-topic-dlt
+    password-reset: password-reset-topic
+    password-reset-dlt: password-reset-topic-dlt
+    welcome-email: welcome-email-topic
+
+  groups:
+    email-verification: group-email-verification
+    email-verification-dlt: group-email-verification-dlt
+    otp-verification: group-otp-verification
+    otp-verification-dlt: group-otp-verification-dlt
+    password-reset: group-password-reset
+    password-reset-dlt: group-password-reset-dlt
+    welcome-email: group-welcome-email
+
+app:
+  oauth2:
+    redirect-uri: http://localhost:3000/oauth2/callback
+
+
+
+jwt:
+  secret: ${JWT_SECRET}
+  issuer: ${JWT_ISSUER:auth-service}
+  access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:3600000}
+  refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:604800000}
