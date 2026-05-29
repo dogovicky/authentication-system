@@ -83,4 +83,4 @@ jobs:
 
       - name: Build docker image
         if: success()
-        run: docker build -t auth-system:${[ github.sha ]} .
+        run: docker build -t auth-system:${{ github.sha }} .
