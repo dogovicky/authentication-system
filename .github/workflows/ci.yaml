@@ -147,20 +147,18 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PROD_KEY }}
+          command_timeout: 10m
           script: |
             cd /home/deploy/auth-system
             
-            # Pull latest image
+            # Login
             echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             
             # pull latest image
             docker pull ghcr.io/${{ github.repository }}/auth-system:main
             
-            # update docker compose to use new image
-            docker compose -f docker-compose.yml pull
-            
-            # restart with zero downtime
-            docker compose -f docker-compose.yml up -d --remove-orphans
+            # restart only auth-system
+             docker compose --env-file prod.env up -d --no-deps auth-system
             
             # clean up old images
             docker image prune -f
