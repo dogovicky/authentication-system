@@ -180,7 +180,7 @@
 		<dependency>
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-registry-prometheus</artifactId>
-			<scope>compile</scope>
+<!--			<scope>compile</scope>-->
 		</dependency>
 
 		<dependency>
